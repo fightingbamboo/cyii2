@@ -1,10 +1,13 @@
 # cyii2
-extension of yii 2, speed up for it
 
-修改
+##extension of yii 2, speed up for it
+
+###修改
+
 
 yii2/framework/di/Container.php
 
+```php
 @@ -428,7 +428,7 @@ class Container extends Component
                      $dependencies[] = $param->getDefaultValue();
                  } else {
@@ -14,9 +17,10 @@ yii2/framework/di/Container.php
                  }
              }
          }
-
+```
 zephir/Library/CompilerFile.php
 
+```php
 @@ -613,7 +613,7 @@ class CompilerFile
                      }
                      $namespace = $topStatement['name'];
@@ -26,3 +30,4 @@ zephir/Library/CompilerFile.php
                          throw new CompilerException("Namespace '" . $namespace . "' must be in camelized-form", $topStatement);
                      }
                      break;
+```
