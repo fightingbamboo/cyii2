@@ -1,12 +1,19 @@
 # cyii2
 ##extension of yii 2, speed up for it
 
+###安装工具
+####./vendor/phalcon/zephir/README.md 根据文档安装zephir和php扩展开发 所需的库
+
+####./vendor/bin/zephir generate 生成代码
+####./vendor/bin/zephir build 编译代码 生成扩展so文件
+####开启扩展并重新启动php进程即可启用该cyii2扩展以加速yii2框架执行
+
 ###phpunit run test
-./vendor/bin/phpunit --group=*  ex:base,di,web,mysql
+####./vendor/bin/phpunit --group=*  example:base,di,web,mysql
 
-###修改
+###库修改
 
-yii2/framework/di/Container.php
+####./yii2/framework/di/Container.php
 
 ```php
 @@ -428,7 +428,7 @@ class Container extends Component
@@ -19,7 +26,7 @@ yii2/framework/di/Container.php
              }
          }
 ```
-zephir/Library/CompilerFile.php
+####./vendor/phalcon/zephir/Library/CompilerFile.php
 
 ```php
 @@ -613,7 +613,7 @@ class CompilerFile
@@ -32,3 +39,4 @@ zephir/Library/CompilerFile.php
                      }
                      break;
 ```
+###已存在的问题
