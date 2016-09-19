@@ -1,11 +1,9 @@
 .idea/*
 .temp
-ext/.libs
-ext/.deps
-ext/autom4te.cache/*
-ext/modules
-ext/yii
+ext/*
 
 vendor/*
-tests/*
 trait/*
+complie.log
+complie-errors.log
+composer.lock
