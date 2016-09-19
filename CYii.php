@@ -48,6 +48,6 @@ class Yii extends yii\BaseYii
 }
 
 spl_autoload_register(['Yii', 'autoload'], true, true);
-Yii::$classMap = require(__DIR__ . '/vendor/yiisoft/yii2/classes.php');
-Yii::$aliases = ['@yii' => __DIR__.'/vendor/yiisoft/yii2'];
+Yii::$classMap = require(__DIR__ . '/yii2/framework/classes.php');
+Yii::$aliases = ['@yii' => __DIR__.'/yii2/framework'];
 Yii::$container = new yii\di\Container();
