@@ -4,6 +4,6 @@ ext/*
 
 vendor/*
 trait/*
-complie.log
-complie-errors.log
+compile.log
+compile-errors.log
 composer.lock

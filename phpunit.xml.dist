@@ -7,7 +7,7 @@
 		 stopOnFailure="false">
 	<testsuites>
 		<testsuite name="Yii Test Suite">
-			<directory>./tests</directory>
+			<directory>./yii2/tests</directory>
 		</testsuite>
 	</testsuites>
 	<filter>

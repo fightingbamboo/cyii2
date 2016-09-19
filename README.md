@@ -1,9 +1,10 @@
 # cyii2
-
 ##extension of yii 2, speed up for it
 
-###修改
+###phpunit run test
+./vendor/bin/phpunit --group=*  ex:base,di,web,mysql
 
+###修改
 
 yii2/framework/di/Container.php
 
