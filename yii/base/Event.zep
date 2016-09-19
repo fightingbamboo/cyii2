@@ -47,7 +47,7 @@ class Event extends \yii\base\Object
      */
     public data;
 
-    public static _events = [];
+    protected static _events = [];
 
     /**
      * Attaches an event handler to a class-level event.
@@ -107,43 +107,26 @@ class Event extends \yii\base\Object
      */
     public static function off($class, string name, handler = null)
     {
-        var events, event, temp_event, temp_event2, removed_temp_event;
-
         let $class = ltrim($class, "\\");
         if !isset $static::$_events[name][$class] || empty $static::$_events[name][$class] {
             return false;
         }
         if typeof handler == "null" {
-            let events = $static::$_events,
-                event = events[name];
-            unset event[$class];
-            let events[name] = event,
-                $static::$_events = events;
+            unset $static::$_events[name][$class];
             return true;
         } else {
-            var removed, i;
+            var removed, i,temp_event;
             let removed = false;
-            let events = $static::$_events,
-                event = events[name];
-
-            if isset event[$class] && typeof event[$class] == "array" {
-                for i, temp_event in event[$class] {
-                    if temp_event[0] == handler {
-
-                        let temp_event2 = event[$class];
-                        unset temp_event2[i];
-
-                        let event[$class] = temp_event2,
-                            removed = true;
-                    } 
+            if typeof $static::$_events[name][$class] == "array" {
+                for i, temp_event in $static::$_events[name][$class] {
+                    if typeof temp_event == "array" && temp_event[0] == handler {
+                        unset $static::$_events[name][$class][i];
+                        let removed = true;
+                    }
                 }
             }
-            if (removed) {
-                let removed_temp_event = event[$class],
-                    removed_temp_event = array_values(removed_temp_event),
-                    event[$class] = removed_temp_event,
-                    events[name] = event[$class],
-                    $static::$_events = events;
+            if removed {
+                let self::$_events[$name][$class] = array_values(self::$_events[$name][$class]);
             }
 
             return removed;
