@@ -98,7 +98,7 @@ class $Object implements Configurable
      *
      * @param array config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct( config = [])
+    public function __construct(array config = [] )
     {
         if !empty config {
             BaseYii::configure(this, config);

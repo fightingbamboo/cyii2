@@ -140,11 +140,10 @@ class Module extends ServiceLocator
      */
     public static function getInstance()
     {
-        var app,get_class;
-        let app = BaseYii::$app;
+        var get_class;
         let get_class = get_called_class();
-        if isset app->loadedModules[get_class] {
-            return app->loadedModules[get_class];
+        if isset BaseYii::$app->loadedModules[get_class] {
+            return BaseYii::$app->loadedModules[get_class];
         } else {
             return null;
         }
@@ -158,12 +157,10 @@ class Module extends ServiceLocator
      */
     public static function setInstance(instance)
     {
-        var app;
-        let app = BaseYii::$app;
         if instance === null {
-            unset(app->loadedModules[get_called_class()]);
+            unset(BaseYii::$app->loadedModules[get_called_class()]);
         } else {
-            app->loadedModules[get_class(instance)] = instance;
+            BaseYii::$app->loadedModules[get_class(instance)] = instance;
         }
     }
 
@@ -201,9 +198,9 @@ class Module extends ServiceLocator
             this_id = this->id,
             slash = "/";
 
-        if typeof module != "null" {
+        if typeof this->module != "null" {
             let unique_id = module->getUniqueId(),
-                temp_id = unique_id . slash . this_id,
+                temp_id = unique_id . slash . this->id,
                 id = ltrim(temp_id, slash);
             return id;
         }
@@ -260,9 +257,9 @@ class Module extends ServiceLocator
     public function getControllerPath()
     {
         var path;
-        let path = this->controllerNamespace,
-            path = str_replace("\\", "/", path),
-            path = "@" . path;
+        let path = this->controllerNamespace;
+        let path = str_replace("\\", "/", path);
+        let path = "@" . path;
 
         return BaseYii::getAlias(path);
     }
@@ -277,9 +274,9 @@ class Module extends ServiceLocator
         if typeof this->_viewPath != "null" {
             return this->_viewPath;
         } else {
-            let view_path = this->getBasePath(),
-                view_path .= DIRECTORY_SEPARATOR . "views",
-                this->_viewPath = view_path;
+            let view_path = this->getBasePath();
+            let view_path = view_path . DIRECTORY_SEPARATOR . "views";
+            let this->_viewPath = view_path;
             return view_path;
         }
     }
@@ -610,7 +607,7 @@ class Module extends ServiceLocator
 
         let pos = strpos(route, "//");
 
-        if typeof pos != "boolean" {
+        if typeof pos !== false {
             return false;
         }
         var id;
@@ -647,7 +644,7 @@ class Module extends ServiceLocator
 
         let pos = strrpos(route, slash);
         if typeof pos != "boolean" {
-            let id .= slash . substr(route, 0, pos);
+            let id = id . slash . substr(route, 0, pos);
             let route = substr(route, pos + 1);
         }
 
@@ -685,21 +682,26 @@ class Module extends ServiceLocator
      * @throws InvalidConfigException if the controller class and its file name do not match.
      * This exception is only thrown when in debug mode.
      */
-    public function createControllerByID(string id)
+    public function createControllerByID(id)
     {
         if !preg_match("%^[a-z0-9\\-_/]+$%", id) {
             return null;
         }
 
         var pos, prefix, className;
-
         let pos = strrpos(id, "/");
-        if typeof pos == "boolean" {
+        if  pos === false {
             let prefix = "";
             let className = id;
         } else {
             let prefix = substr(id, 0, pos + 1);
             let className = substr(id, pos + 1);
+        }
+        if !preg_match("%^[a-z][a-z0-9\\-_]*$%", className) {
+                    return null;
+        }
+        if prefix !== '' && !preg_match("%^[a-z0-9_/]+$%i", prefix) {
+            return null;
         }
 
         let className = str_replace("-", " ", className),
@@ -712,17 +714,15 @@ class Module extends ServiceLocator
             className = ltrim(className, "\\");
 
         let pos = strpos(className, "-");
-        if typeof pos != "boolean" || !class_exists(className) {
+        if typeof pos !== false || !class_exists(className) {
             return null;
         }
 
         if is_subclass_of(className, "yii\\base\\Controller") {
             var elements = [];
-
             let elements[] = id,
                 elements[] = this;
             return BaseYii::createObject(className, elements);
-
         } else {
             if (YII_DEBUG) {
                 throw new InvalidConfigException("Controller class must extend from \\yii\\base\\Controller.");
@@ -757,10 +757,8 @@ class Module extends ServiceLocator
      */
     public function beforeAction(action)
     {
-        var temp_action, event;
-        let temp_action = action;
-
-        let event = new ActionEvent(temp_action);
+        var event;
+        let event = new ActionEvent(action);
         this->trigger(self::EVENT_BEFORE_ACTION, event);
         return event->isValid;
     }
@@ -788,12 +786,9 @@ class Module extends ServiceLocator
      */
     public function afterAction(action, result)
     {
-        var temp_action, temp_result, event;
-        let temp_action = action,
-            temp_result = result;
-
-        let event = new ActionEvent(temp_action);
-        let event->result = temp_result;
+        var event;
+        let event = new ActionEvent(action);
+        let event->result = result;
         this->trigger(self::EVENT_AFTER_ACTION, event);
         return event->result;
     }

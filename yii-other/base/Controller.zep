@@ -64,11 +64,11 @@ class Controller extends Component implements ViewContextInterface
     /**
      * @var View the view object that can be used to render views or view files.
      */
-    private _view;
+    protected _view;
     /**
      * @var string the root directory that contains view files for this controller.
      */
-    private _viewPath;
+    protected _viewPath;
 
 
     /**
@@ -76,7 +76,7 @@ class Controller extends Component implements ViewContextInterface
      * @param Module $module the module that this controller belongs to.
      * @param array $config name-value pairs that will be used to initialize the object properties.
      */
-    public function __construct(id, module, array config = [])
+    public function __construct(id, module, config = [])
     {
         let this->id = id;
         let this->module = module;
@@ -134,7 +134,7 @@ class Controller extends Component implements ViewContextInterface
         let oldAction = this->action;
         let this->action = action;
 
-        var modules = [];
+        var modules;
         let runAction = true;
 
         // call beforeAction on modules
@@ -152,7 +152,6 @@ class Controller extends Component implements ViewContextInterface
         if runAction && this->beforeAction(action) {
             // run the action
             let result = action->runWithParams(params);
-
             let result = this->afterAction(action, result);
 
             // call afterAction on modules
@@ -214,7 +213,7 @@ class Controller extends Component implements ViewContextInterface
     public function createAction(string id)
     {
         var actionMap, methodName, method;
-        if (id === '') {
+        if id === '' {
             let id = this->defaultAction;
         }
 
@@ -494,7 +493,7 @@ class Controller extends Component implements ViewContextInterface
      * Please refer to [[render()]] on how to specify this parameter.
      * @throws InvalidParamException if an invalid path alias is used to specify the layout.
      */
-    public function findLayoutFile(view)
+    public function findLayoutFile(<View> view)
     {
         var module,layout,file;
         let module = this->module;

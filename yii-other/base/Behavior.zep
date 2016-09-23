@@ -67,8 +67,9 @@ class Behavior extends \yii\base\Object
     public function attach(owner)
     {
         let this->owner = owner;
-        var event, handler;
-        for event, handler in this->events() {
+        var event, handler, events;
+        let events = this->events();
+        for event, handler in events {
             owner->on(event, is_string(handler) ? [this, handler] : handler);
         }
     }
@@ -82,8 +83,9 @@ class Behavior extends \yii\base\Object
     public function detach()
     {
         if (this->owner) {
-            var event, handler;
-            for event, handler in this->events() {
+           var event, handler, events;
+           let events = this->events();
+           for event, handler in events {
                 this->owner->off(event, is_string(handler) ? [this, handler] : handler);
             }
             let this->owner = null;

@@ -544,9 +544,11 @@ class BaseYii
      */
     public static function configure($object, properties)
     {
-        var name, value;
-        for name, value in properties {
-            let $object->{name} = value;
+        if typeof $object == "object" && typeof properties == "array" {
+            var name, value;
+            for name, value in properties {
+                let $object->{name} = value;
+            }
         }
         return $object;
     }
