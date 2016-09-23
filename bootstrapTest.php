@@ -20,6 +20,8 @@ if (is_file($composerAutoload)) {
 
 require_once(__DIR__ . '/CYii.php');
 
+//require_once(__DIR__ . '/yii2/framework/Yii.php');
+
 Yii::setAlias('@yiiunit', __DIR__."/yii2/tests");
 
 require_once(__DIR__ . '/yii2/tests/TestCase.php');
