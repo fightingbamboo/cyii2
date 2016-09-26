@@ -147,7 +147,7 @@ PHP_METHOD(yii_BaseYii, getAlias) {
 	ZVAL_STRING(&_1, "@", 0);
 	ZEPHIR_SINIT_VAR(_2);
 	ZVAL_LONG(&_2, 1);
-	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", NULL, 5, alias, &_1, &_2);
+	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", NULL, 12, alias, &_1, &_2);
 	zephir_check_call_status();
 	if (zephir_is_true(_3)) {
 		RETURN_CTOR(alias);
@@ -168,18 +168,18 @@ PHP_METHOD(yii_BaseYii, getAlias) {
 	if (zephir_array_isset_fetch(&root_alias, aliases, root, 0 TSRMLS_CC)) {
 		if (Z_TYPE_P(root_alias) == IS_STRING) {
 			if (Z_TYPE_P(pos) == IS_BOOL) {
-				zephir_array_fetch(&_5$$8, aliases, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 116 TSRMLS_CC);
+				zephir_array_fetch(&_5$$8, aliases, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 115 TSRMLS_CC);
 				RETURN_CTOR(_5$$8);
 			} else {
-				zephir_array_fetch(&_6$$9, aliases, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 119 TSRMLS_CC);
+				zephir_array_fetch(&_6$$9, aliases, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 118 TSRMLS_CC);
 				ZEPHIR_INIT_VAR(_7$$9);
 				zephir_substr(_7$$9, alias, zephir_get_intval(pos), 0, ZEPHIR_SUBSTR_NO_LENGTH);
 				ZEPHIR_CONCAT_VV(return_value, _6$$9, _7$$9);
 				RETURN_MM();
 			}
 		} else {
-			zephir_array_fetch(&_8$$10, aliases, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 123 TSRMLS_CC);
-			zephir_is_iterable(_8$$10, &_10$$10, &_9$$10, 0, 0, "yii/BaseYii.zep", 129);
+			zephir_array_fetch(&_8$$10, aliases, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 122 TSRMLS_CC);
+			zephir_is_iterable(_8$$10, &_10$$10, &_9$$10, 0, 0, "yii/BaseYii.zep", 128);
 			for (
 			  ; zephir_hash_get_current_data_ex(_10$$10, (void**) &_11$$10, &_9$$10) == SUCCESS
 			  ; zephir_hash_move_forward_ex(_10$$10, &_9$$10)
@@ -214,7 +214,7 @@ PHP_METHOD(yii_BaseYii, getAlias) {
 		ZEPHIR_CONCAT_SV(_18$$13, "Invalid path alias: ", alias);
 		ZEPHIR_CALL_METHOD(NULL, _17$$13, "__construct", NULL, 2, _18$$13);
 		zephir_check_call_status();
-		zephir_throw_exception_debug(_17$$13, "yii/BaseYii.zep", 133 TSRMLS_CC);
+		zephir_throw_exception_debug(_17$$13, "yii/BaseYii.zep", 132 TSRMLS_CC);
 		ZEPHIR_MM_RESTORE();
 		return;
 	} else {
@@ -259,13 +259,13 @@ PHP_METHOD(yii_BaseYii, getRootAlias) {
 	_2 = zephir_fetch_static_property_ce(yii_baseyii_ce, SL("aliases") TSRMLS_CC);
 	if (zephir_array_isset(_2, root)) {
 		_3$$5 = zephir_fetch_static_property_ce(yii_baseyii_ce, SL("aliases") TSRMLS_CC);
-		zephir_array_fetch(&_4$$5, _3$$5, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 159 TSRMLS_CC);
+		zephir_array_fetch(&_4$$5, _3$$5, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 158 TSRMLS_CC);
 		if (Z_TYPE_P(_4$$5) == IS_STRING) {
 			RETURN_CCTOR(root);
 		} else {
 			_5$$7 = zephir_fetch_static_property_ce(yii_baseyii_ce, SL("aliases") TSRMLS_CC);
-			zephir_array_fetch(&_6$$7, _5$$7, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 163 TSRMLS_CC);
-			zephir_is_iterable(_6$$7, &_8$$7, &_7$$7, 0, 0, "yii/BaseYii.zep", 169);
+			zephir_array_fetch(&_6$$7, _5$$7, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 162 TSRMLS_CC);
+			zephir_is_iterable(_6$$7, &_8$$7, &_7$$7, 0, 0, "yii/BaseYii.zep", 168);
 			for (
 			  ; zephir_hash_get_current_data_ex(_8$$7, (void**) &_9$$7, &_7$$7) == SUCCESS
 			  ; zephir_hash_move_forward_ex(_8$$7, &_7$$7)
@@ -344,7 +344,7 @@ PHP_METHOD(yii_BaseYii, setAlias) {
 	ZVAL_STRING(&_1, "@", 0);
 	ZEPHIR_SINIT_VAR(_2);
 	ZVAL_LONG(&_2, 1);
-	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", &_4, 5, alias, &_1, &_2);
+	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", &_4, 12, alias, &_1, &_2);
 	zephir_check_call_status();
 	if (zephir_is_true(_3)) {
 		ZEPHIR_INIT_VAR(_5$$4);
@@ -368,7 +368,7 @@ PHP_METHOD(yii_BaseYii, setAlias) {
 		ZVAL_STRING(&_7$$7, "@", 0);
 		ZEPHIR_SINIT_VAR(_8$$7);
 		ZVAL_LONG(&_8$$7, 1);
-		ZEPHIR_CALL_FUNCTION(&_9$$7, "strncmp", &_4, 5, path, &_7$$7, &_8$$7);
+		ZEPHIR_CALL_FUNCTION(&_9$$7, "strncmp", &_4, 12, path, &_7$$7, &_8$$7);
 		zephir_check_call_status();
 		if (zephir_is_true(_9$$7)) {
 			ZEPHIR_SINIT_VAR(_10$$8);
@@ -390,19 +390,19 @@ PHP_METHOD(yii_BaseYii, setAlias) {
 			}
 		} else {
 			ZEPHIR_OBS_VAR(_11$$13);
-			zephir_array_fetch(&_11$$13, aliases, root, PH_NOISY, "yii/BaseYii.zep", 245 TSRMLS_CC);
+			zephir_array_fetch(&_11$$13, aliases, root, PH_NOISY, "yii/BaseYii.zep", 244 TSRMLS_CC);
 			if (Z_TYPE_P(_11$$13) == IS_STRING) {
 				if (Z_TYPE_P(pos) == IS_BOOL) {
 					zephir_array_update_zval(&aliases, root, &path_ext$$7, PH_COPY | PH_SEPARATE);
 				} else {
 					zephir_array_update_zval(&elements$$7, alias, &path_ext$$7, PH_COPY | PH_SEPARATE);
-					zephir_array_fetch(&_12$$16, aliases, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 250 TSRMLS_CC);
+					zephir_array_fetch(&_12$$16, aliases, root, PH_NOISY | PH_READONLY, "yii/BaseYii.zep", 249 TSRMLS_CC);
 					zephir_array_update_zval(&elements$$7, root, &_12$$16, PH_COPY | PH_SEPARATE);
 					zephir_array_update_zval(&aliases, root, &elements$$7, PH_COPY | PH_SEPARATE);
 				}
 			} else {
 				ZEPHIR_OBS_VAR(root_alias);
-				zephir_array_fetch(&root_alias, aliases, root, PH_NOISY, "yii/BaseYii.zep", 254 TSRMLS_CC);
+				zephir_array_fetch(&root_alias, aliases, root, PH_NOISY, "yii/BaseYii.zep", 253 TSRMLS_CC);
 				zephir_array_update_zval(&root_alias, alias, &path_ext$$7, PH_COPY | PH_SEPARATE);
 				ZEPHIR_MAKE_REF(root_alias);
 				ZEPHIR_CALL_FUNCTION(NULL, "krsort", NULL, 16, root_alias);
@@ -532,7 +532,7 @@ PHP_METHOD(yii_BaseYii, autoload) {
 		ZEPHIR_CONCAT_SVSVS(_19$$8, "Unable to find \\'", className, "\\' in file: ", classFile, " Namespace missing?");
 		ZEPHIR_CALL_METHOD(NULL, _18$$8, "__construct", NULL, 3, _19$$8);
 		zephir_check_call_status();
-		zephir_throw_exception_debug(_18$$8, "yii/BaseYii.zep", 319 TSRMLS_CC);
+		zephir_throw_exception_debug(_18$$8, "yii/BaseYii.zep", 318 TSRMLS_CC);
 		ZEPHIR_MM_RESTORE();
 		return;
 	}
@@ -584,11 +584,10 @@ PHP_METHOD(yii_BaseYii, autoload) {
  */
 PHP_METHOD(yii_BaseYii, createObject) {
 
-	zval *text$$6, *_7$$6;
 	zend_bool _0;
 	int ZEPHIR_LAST_CALL_STATUS;
 	zval *params = NULL;
-	zval *type, *params_param = NULL, *_1, *_2 = NULL, *_3$$3, *class$$4 = NULL, *_4$$4, *_5$$5, *_6$$6, *_8$$7, *_9$$7, *_10$$7;
+	zval *type, *params_param = NULL, *_1, *_2 = NULL, *_3$$3, *class_name$$4 = NULL, *_4$$4, *_5$$5, *text$$6 = NULL, *_6$$6, *_7$$6, *_8$$7, *_9$$7, *_10$$7;
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 1, &type, &params_param);
@@ -615,11 +614,11 @@ PHP_METHOD(yii_BaseYii, createObject) {
 		zephir_check_call_status();
 		RETURN_MM();
 	} else if (_0) {
-		ZEPHIR_OBS_VAR(class$$4);
-		zephir_array_fetch_string(&class$$4, type, SL("class"), PH_NOISY, "yii/BaseYii.zep", 371 TSRMLS_CC);
+		ZEPHIR_OBS_VAR(class_name$$4);
+		zephir_array_fetch_string(&class_name$$4, type, SL("class"), PH_NOISY, "yii/BaseYii.zep", 370 TSRMLS_CC);
 		zephir_array_unset_string(&type, SS("class"), PH_SEPARATE);
 		_4$$4 = zephir_fetch_static_property_ce(yii_baseyii_ce, SL("container") TSRMLS_CC);
-		ZEPHIR_RETURN_CALL_METHOD(_4$$4, "get", NULL, 0, class$$4, params, type);
+		ZEPHIR_RETURN_CALL_METHOD(_4$$4, "get", NULL, 0, class_name$$4, params, type);
 		zephir_check_call_status();
 		RETURN_MM();
 	} else if (zephir_is_true(_2)) {
@@ -636,7 +635,7 @@ PHP_METHOD(yii_BaseYii, createObject) {
 		ZEPHIR_CONCAT_SVS(_7$$6, "Object configuration must be an array containing a \"", text$$6, "\" element.");
 		ZEPHIR_CALL_METHOD(NULL, _6$$6, "__construct", NULL, 3, _7$$6);
 		zephir_check_call_status();
-		zephir_throw_exception_debug(_6$$6, "yii/BaseYii.zep", 378 TSRMLS_CC);
+		zephir_throw_exception_debug(_6$$6, "yii/BaseYii.zep", 377 TSRMLS_CC);
 		ZEPHIR_MM_RESTORE();
 		return;
 	} else {
@@ -648,7 +647,7 @@ PHP_METHOD(yii_BaseYii, createObject) {
 		ZEPHIR_CONCAT_SV(_10$$7, "Unsupported configuration type: ", _9$$7);
 		ZEPHIR_CALL_METHOD(NULL, _8$$7, "__construct", NULL, 3, _10$$7);
 		zephir_check_call_status();
-		zephir_throw_exception_debug(_8$$7, "yii/BaseYii.zep", 380 TSRMLS_CC);
+		zephir_throw_exception_debug(_8$$7, "yii/BaseYii.zep", 379 TSRMLS_CC);
 		ZEPHIR_MM_RESTORE();
 		return;
 	}
@@ -1001,7 +1000,7 @@ PHP_METHOD(yii_BaseYii, t) {
 	} else {
 		ZEPHIR_INIT_VAR(p$$4);
 		array_init(p$$4);
-		zephir_is_iterable(params, &_6$$4, &_5$$4, 0, 0, "yii/BaseYii.zep", 533);
+		zephir_is_iterable(params, &_6$$4, &_5$$4, 0, 0, "yii/BaseYii.zep", 532);
 		for (
 		  ; zephir_hash_get_current_data_ex(_6$$4, (void**) &_7$$4, &_5$$4) == SUCCESS
 		  ; zephir_hash_move_forward_ex(_6$$4, &_5$$4)
@@ -1051,7 +1050,7 @@ PHP_METHOD(yii_BaseYii, configure) {
 		_0 = Z_TYPE_P(properties) == IS_ARRAY;
 	}
 	if (_0) {
-		zephir_is_iterable(properties, &_2$$3, &_1$$3, 0, 0, "yii/BaseYii.zep", 552);
+		zephir_is_iterable(properties, &_2$$3, &_1$$3, 0, 0, "yii/BaseYii.zep", 551);
 		for (
 		  ; zephir_hash_get_current_data_ex(_2$$3, (void**) &_3$$3, &_1$$3) == SUCCESS
 		  ; zephir_hash_move_forward_ex(_2$$3, &_1$$3)

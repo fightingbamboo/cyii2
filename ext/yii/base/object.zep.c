@@ -31,31 +31,31 @@
  * A property is defined by a getter method (e.g. `getLabel`), and/or a setter method (e.g. `setLabel`). For example,
  * the following getter and setter methods define a property named `label`:
  *
- * ~~~
- * private _label;
+ * ```php
+ * private $_label;
  *
  * public function getLabel()
  * {
- *     return this->_label;
+ *     return $this->_label;
  * }
  *
- * public function setLabel(value)
+ * public function setLabel($value)
  * {
- *     this->_label = value;
+ *     $this->_label = $value;
  * }
- * ~~~
+ * ```
  *
  * Property names are *case-insensitive*.
  *
  * A property can be accessed like a member variable of an object. Reading or writing a property will cause the invocation
  * of the corresponding getter or setter method. For example,
  *
- * ~~~
- * // equivalent to label = object->getLabel();
- * label = object->label;
- * // equivalent to object->setLabel('abc');
- * object->label = 'abc';
- * ~~~
+ * ```php
+ * // equivalent to $label = $object->getLabel();
+ * $label = $object->label;
+ * // equivalent to $object->setLabel('abc');
+ * $object->label = 'abc';
+ * ```
  *
  * If a property has only a getter method and has no setter method, it is considered as *read-only*. In this case, trying
  * to modify the property value will cause an exception.
@@ -76,15 +76,15 @@
  * In order to ensure the above life cycles, if a child class of Object needs to override the constructor,
  * it should be done like the following:
  *
- * ~~~
- * public function __construct(param1, param2, ..., config = [])
+ * ```php
+ * public function __construct($param1, $param2, ..., $config = [])
  * {
  *     ...
- *     parent::__construct(config);
+ *     parent::__construct($config);
  * }
- * ~~~
+ * ```
  *
- * That is, a `config` parameter (defaults to `[]`) should be declared as the last parameter
+ * That is, a `$config` parameter (defaults to `[]`) should be declared as the last parameter
  * of the constructor, and the parent implementation should be called at the end of the constructor.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -100,6 +100,7 @@ ZEPHIR_INIT_CLASS(yii_base_Object) {
 }
 
 /**
+ * Returns the fully qualified name of this class.
  * @return string the fully qualified name of this class.
  */
 PHP_METHOD(yii_base_Object, className) {
@@ -115,15 +116,15 @@ PHP_METHOD(yii_base_Object, className) {
  * Constructor.
  * The default implementation does two things:
  *
- * - Initializes the object with the given configuration `config`.
+ * - Initializes the object with the given configuration `$config`.
  * - Call [[init()]].
  *
  * If this method is overridden in a child class, it is recommended that
  *
- * - the last parameter of the constructor is a configuration array, like `config` here.
+ * - the last parameter of the constructor is a configuration array, like `$config` here.
  * - call the parent implementation at the end of the constructor.
  *
- * @param array config name-value pairs that will be used to initialize the object properties
+ * @param array $config name-value pairs that will be used to initialize the object properties
  */
 PHP_METHOD(yii_base_Object, __construct) {
 
@@ -169,8 +170,8 @@ PHP_METHOD(yii_base_Object, init) {
  * Returns the value of an object property.
  *
  * Do not call this method directly as it is a PHP magic method that
- * will be implicitly called when executing `value = object->property;`.
- * @param string name the property name
+ * will be implicitly called when executing `$value = $object->property;`.
+ * @param string $name the property name
  * @return mixed the property value
  * @throws UnknownPropertyException if the property is not defined
  * @throws InvalidCallException if the property is write-only
@@ -179,7 +180,7 @@ PHP_METHOD(yii_base_Object, init) {
 PHP_METHOD(yii_base_Object, __get) {
 
 	int ZEPHIR_LAST_CALL_STATUS;
-	zval *name_param = NULL, *getter = NULL, *setter = NULL, *_1$$5, *_2$$5, *_3$$5, *_4$$6, *_5$$6, *_6$$6;
+	zval *name_param = NULL, *getter = NULL, *_1$$4, *_2$$4, *_3$$4, *_4$$5, *_5$$5, *_6$$5;
 	zval *name = NULL, *_0 = NULL;
 
 	ZEPHIR_MM_GROW();
@@ -193,37 +194,34 @@ PHP_METHOD(yii_base_Object, __get) {
 	ZEPHIR_CPY_WRT(getter, _0);
 	ZEPHIR_INIT_LNVAR(_0);
 	ZEPHIR_CONCAT_SV(_0, "set", name);
-	ZEPHIR_CPY_WRT(setter, _0);
 	if ((zephir_method_exists(this_ptr, getter TSRMLS_CC)  == SUCCESS)) {
 		ZEPHIR_RETURN_CALL_METHOD_ZVAL(this_ptr, getter, NULL, 0);
 		zephir_check_call_status();
 		RETURN_MM();
+	} else if ((zephir_method_exists(this_ptr, _0 TSRMLS_CC)  == SUCCESS)) {
+		ZEPHIR_INIT_VAR(_1$$4);
+		object_init_ex(_1$$4, yii_base_invalidcallexception_ce);
+		ZEPHIR_INIT_VAR(_2$$4);
+		zephir_get_class(_2$$4, this_ptr, 0 TSRMLS_CC);
+		ZEPHIR_INIT_VAR(_3$$4);
+		ZEPHIR_CONCAT_SVSV(_3$$4, "Getting write-only property: ", _2$$4, "::", name);
+		ZEPHIR_CALL_METHOD(NULL, _1$$4, "__construct", NULL, 2, _3$$4);
+		zephir_check_call_status();
+		zephir_throw_exception_debug(_1$$4, "yii/base/Object.zep", 135 TSRMLS_CC);
+		ZEPHIR_MM_RESTORE();
+		return;
 	} else {
-		if ((zephir_method_exists(this_ptr, setter TSRMLS_CC)  == SUCCESS)) {
-			ZEPHIR_INIT_VAR(_1$$5);
-			object_init_ex(_1$$5, yii_base_invalidcallexception_ce);
-			ZEPHIR_INIT_VAR(_2$$5);
-			zephir_get_class(_2$$5, this_ptr, 0 TSRMLS_CC);
-			ZEPHIR_INIT_VAR(_3$$5);
-			ZEPHIR_CONCAT_SVSV(_3$$5, "Getting write-only property: ", _2$$5, "::", name);
-			ZEPHIR_CALL_METHOD(NULL, _1$$5, "__construct", NULL, 2, _3$$5);
-			zephir_check_call_status();
-			zephir_throw_exception_debug(_1$$5, "yii/base/Object.zep", 139 TSRMLS_CC);
-			ZEPHIR_MM_RESTORE();
-			return;
-		} else {
-			ZEPHIR_INIT_VAR(_4$$6);
-			object_init_ex(_4$$6, yii_base_unknownpropertyexception_ce);
-			ZEPHIR_INIT_VAR(_5$$6);
-			zephir_get_class(_5$$6, this_ptr, 0 TSRMLS_CC);
-			ZEPHIR_INIT_VAR(_6$$6);
-			ZEPHIR_CONCAT_SVSV(_6$$6, "Getting unknown property: ", _5$$6, "::", name);
-			ZEPHIR_CALL_METHOD(NULL, _4$$6, "__construct", NULL, 3, _6$$6);
-			zephir_check_call_status();
-			zephir_throw_exception_debug(_4$$6, "yii/base/Object.zep", 141 TSRMLS_CC);
-			ZEPHIR_MM_RESTORE();
-			return;
-		}
+		ZEPHIR_INIT_VAR(_4$$5);
+		object_init_ex(_4$$5, yii_base_unknownpropertyexception_ce);
+		ZEPHIR_INIT_VAR(_5$$5);
+		zephir_get_class(_5$$5, this_ptr, 0 TSRMLS_CC);
+		ZEPHIR_INIT_VAR(_6$$5);
+		ZEPHIR_CONCAT_SVSV(_6$$5, "Getting unknown property: ", _5$$5, "::", name);
+		ZEPHIR_CALL_METHOD(NULL, _4$$5, "__construct", NULL, 3, _6$$5);
+		zephir_check_call_status();
+		zephir_throw_exception_debug(_4$$5, "yii/base/Object.zep", 137 TSRMLS_CC);
+		ZEPHIR_MM_RESTORE();
+		return;
 	}
 
 }
@@ -232,9 +230,9 @@ PHP_METHOD(yii_base_Object, __get) {
  * Sets value of an object property.
  *
  * Do not call this method directly as it is a PHP magic method that
- * will be implicitly called when executing `object->property = value;`.
- * @param string name the property name or the event name
- * @param mixed value the property value
+ * will be implicitly called when executing `$object->property = $value;`.
+ * @param string $name the property name or the event name
+ * @param mixed $value the property value
  * @throws UnknownPropertyException if the property is not defined
  * @throws InvalidCallException if the property is read-only
  * @see __get()
@@ -242,7 +240,7 @@ PHP_METHOD(yii_base_Object, __get) {
 PHP_METHOD(yii_base_Object, __set) {
 
 	int ZEPHIR_LAST_CALL_STATUS;
-	zval *name_param = NULL, *value, *getter = NULL, *setter = NULL, *_1$$5, *_2$$5, *_3$$5, *_4$$6, *_5$$6, *_6$$6;
+	zval *name_param = NULL, *value, *setter = NULL, *_1$$4, *_2$$4, *_3$$4, *_4$$5, *_5$$5, *_6$$5;
 	zval *name = NULL, *_0 = NULL;
 
 	ZEPHIR_MM_GROW();
@@ -252,54 +250,52 @@ PHP_METHOD(yii_base_Object, __set) {
 
 
 	ZEPHIR_INIT_VAR(_0);
-	ZEPHIR_CONCAT_SV(_0, "get", name);
-	ZEPHIR_CPY_WRT(getter, _0);
-	ZEPHIR_INIT_LNVAR(_0);
 	ZEPHIR_CONCAT_SV(_0, "set", name);
 	ZEPHIR_CPY_WRT(setter, _0);
+	ZEPHIR_INIT_LNVAR(_0);
+	ZEPHIR_CONCAT_SV(_0, "get", name);
 	if ((zephir_method_exists(this_ptr, setter TSRMLS_CC)  == SUCCESS)) {
 		ZEPHIR_CALL_METHOD_ZVAL(NULL, this_ptr, setter, NULL, 0, value);
 		zephir_check_call_status();
+	} else if ((zephir_method_exists(this_ptr, _0 TSRMLS_CC)  == SUCCESS)) {
+		ZEPHIR_INIT_VAR(_1$$4);
+		object_init_ex(_1$$4, yii_base_invalidcallexception_ce);
+		ZEPHIR_INIT_VAR(_2$$4);
+		zephir_get_class(_2$$4, this_ptr, 0 TSRMLS_CC);
+		ZEPHIR_INIT_VAR(_3$$4);
+		ZEPHIR_CONCAT_SVSV(_3$$4, "Setting read-only property: ", _2$$4, "::", name);
+		ZEPHIR_CALL_METHOD(NULL, _1$$4, "__construct", NULL, 2, _3$$4);
+		zephir_check_call_status();
+		zephir_throw_exception_debug(_1$$4, "yii/base/Object.zep", 160 TSRMLS_CC);
+		ZEPHIR_MM_RESTORE();
+		return;
 	} else {
-		if ((zephir_method_exists(this_ptr, getter TSRMLS_CC)  == SUCCESS)) {
-			ZEPHIR_INIT_VAR(_1$$5);
-			object_init_ex(_1$$5, yii_base_invalidcallexception_ce);
-			ZEPHIR_INIT_VAR(_2$$5);
-			zephir_get_class(_2$$5, this_ptr, 0 TSRMLS_CC);
-			ZEPHIR_INIT_VAR(_3$$5);
-			ZEPHIR_CONCAT_SVSV(_3$$5, "Setting read-only property: ", _2$$5, "::", name);
-			ZEPHIR_CALL_METHOD(NULL, _1$$5, "__construct", NULL, 2, _3$$5);
-			zephir_check_call_status();
-			zephir_throw_exception_debug(_1$$5, "yii/base/Object.zep", 166 TSRMLS_CC);
-			ZEPHIR_MM_RESTORE();
-			return;
-		} else {
-			ZEPHIR_INIT_VAR(_4$$6);
-			object_init_ex(_4$$6, yii_base_unknownpropertyexception_ce);
-			ZEPHIR_INIT_VAR(_5$$6);
-			zephir_get_class(_5$$6, this_ptr, 0 TSRMLS_CC);
-			ZEPHIR_INIT_VAR(_6$$6);
-			ZEPHIR_CONCAT_SVSV(_6$$6, "Setting unknown property: ", _5$$6, "::", name);
-			ZEPHIR_CALL_METHOD(NULL, _4$$6, "__construct", NULL, 3, _6$$6);
-			zephir_check_call_status();
-			zephir_throw_exception_debug(_4$$6, "yii/base/Object.zep", 168 TSRMLS_CC);
-			ZEPHIR_MM_RESTORE();
-			return;
-		}
+		ZEPHIR_INIT_VAR(_4$$5);
+		object_init_ex(_4$$5, yii_base_unknownpropertyexception_ce);
+		ZEPHIR_INIT_VAR(_5$$5);
+		zephir_get_class(_5$$5, this_ptr, 0 TSRMLS_CC);
+		ZEPHIR_INIT_VAR(_6$$5);
+		ZEPHIR_CONCAT_SVSV(_6$$5, "Setting unknown property: ", _5$$5, "::", name);
+		ZEPHIR_CALL_METHOD(NULL, _4$$5, "__construct", NULL, 3, _6$$5);
+		zephir_check_call_status();
+		zephir_throw_exception_debug(_4$$5, "yii/base/Object.zep", 162 TSRMLS_CC);
+		ZEPHIR_MM_RESTORE();
+		return;
 	}
 	ZEPHIR_MM_RESTORE();
 
 }
 
 /**
- * Checks if the named property is set (not null).
+ * Checks if a property is set, i.e. defined and not null.
  *
  * Do not call this method directly as it is a PHP magic method that
- * will be implicitly called when executing `isset(object->property)`.
+ * will be implicitly called when executing `isset($object->property)`.
  *
  * Note that if the property is not defined, false will be returned.
- * @param string name the property name or the event name
+ * @param string $name the property name or the event name
  * @return boolean whether the named property is set (not null).
+ * @see http://php.net/manual/en/function.isset.php
  */
 PHP_METHOD(yii_base_Object, __isset) {
 
@@ -330,17 +326,18 @@ PHP_METHOD(yii_base_Object, __isset) {
  * Sets an object property to null.
  *
  * Do not call this method directly as it is a PHP magic method that
- * will be implicitly called when executing `unset(object->property)`.
+ * will be implicitly called when executing `unset($object->property)`.
  *
  * Note that if the property is not defined, this method will do nothing.
  * If the property is read-only, it will throw an exception.
- * @param string name the property name
+ * @param string $name the property name
  * @throws InvalidCallException if the property is read only.
+ * @see http://php.net/manual/en/function.unset.php
  */
 PHP_METHOD(yii_base_Object, __unset) {
 
 	int ZEPHIR_LAST_CALL_STATUS;
-	zval *name_param = NULL, *getter = NULL, *setter = NULL, *_1$$3, *_2$$5, *_3$$5, *_4$$5;
+	zval *name_param = NULL, *setter = NULL, *_1$$3, *_2$$4, *_3$$4, *_4$$4;
 	zval *name = NULL, *_0 = NULL;
 
 	ZEPHIR_MM_GROW();
@@ -350,30 +347,27 @@ PHP_METHOD(yii_base_Object, __unset) {
 
 
 	ZEPHIR_INIT_VAR(_0);
-	ZEPHIR_CONCAT_SV(_0, "get", name);
-	ZEPHIR_CPY_WRT(getter, _0);
-	ZEPHIR_INIT_LNVAR(_0);
 	ZEPHIR_CONCAT_SV(_0, "set", name);
 	ZEPHIR_CPY_WRT(setter, _0);
+	ZEPHIR_INIT_LNVAR(_0);
+	ZEPHIR_CONCAT_SV(_0, "get", name);
 	if ((zephir_method_exists(this_ptr, setter TSRMLS_CC)  == SUCCESS)) {
 		ZEPHIR_INIT_VAR(_1$$3);
 		ZVAL_NULL(_1$$3);
 		ZEPHIR_CALL_METHOD_ZVAL(NULL, this_ptr, setter, NULL, 0, _1$$3);
 		zephir_check_call_status();
-	} else {
-		if ((zephir_method_exists(this_ptr, getter TSRMLS_CC)  == SUCCESS)) {
-			ZEPHIR_INIT_VAR(_2$$5);
-			object_init_ex(_2$$5, yii_base_invalidcallexception_ce);
-			ZEPHIR_INIT_VAR(_3$$5);
-			zephir_get_class(_3$$5, this_ptr, 0 TSRMLS_CC);
-			ZEPHIR_INIT_VAR(_4$$5);
-			ZEPHIR_CONCAT_SVSV(_4$$5, "Unsetting read-only property: ", _3$$5, "::", name);
-			ZEPHIR_CALL_METHOD(NULL, _2$$5, "__construct", NULL, 2, _4$$5);
-			zephir_check_call_status();
-			zephir_throw_exception_debug(_2$$5, "yii/base/Object.zep", 215 TSRMLS_CC);
-			ZEPHIR_MM_RESTORE();
-			return;
-		}
+	} else if ((zephir_method_exists(this_ptr, _0 TSRMLS_CC)  == SUCCESS)) {
+		ZEPHIR_INIT_VAR(_2$$4);
+		object_init_ex(_2$$4, yii_base_invalidcallexception_ce);
+		ZEPHIR_INIT_VAR(_3$$4);
+		zephir_get_class(_3$$4, this_ptr, 0 TSRMLS_CC);
+		ZEPHIR_INIT_VAR(_4$$4);
+		ZEPHIR_CONCAT_SVSV(_4$$4, "Unsetting read-only property: ", _3$$4, "::", name);
+		ZEPHIR_CALL_METHOD(NULL, _2$$4, "__construct", NULL, 2, _4$$4);
+		zephir_check_call_status();
+		zephir_throw_exception_debug(_2$$4, "yii/base/Object.zep", 209 TSRMLS_CC);
+		ZEPHIR_MM_RESTORE();
+		return;
 	}
 	ZEPHIR_MM_RESTORE();
 
@@ -384,8 +378,8 @@ PHP_METHOD(yii_base_Object, __unset) {
  *
  * Do not call this method directly as it is a PHP magic method that
  * will be implicitly called when an unknown method is being invoked.
- * @param string name the method name
- * @param array params method parameters
+ * @param string $name the method name
+ * @param array $params method parameters
  * @throws UnknownMethodException when calling unknown method
  * @return mixed the method return value
  */
@@ -404,10 +398,10 @@ PHP_METHOD(yii_base_Object, __call) {
 	ZEPHIR_INIT_VAR(_1);
 	zephir_get_class(_1, this_ptr, 0 TSRMLS_CC);
 	ZEPHIR_INIT_VAR(_2);
-	ZEPHIR_CONCAT_SVS(_2, "Calling unknown method: ", _1, "::name()");
+	ZEPHIR_CONCAT_SVSVS(_2, "Calling unknown method: ", _1, "::", name, "()");
 	ZEPHIR_CALL_METHOD(NULL, _0, "__construct", NULL, 2, _2);
 	zephir_check_call_status();
-	zephir_throw_exception_debug(_0, "yii/base/Object.zep", 232 TSRMLS_CC);
+	zephir_throw_exception_debug(_0, "yii/base/Object.zep", 225 TSRMLS_CC);
 	ZEPHIR_MM_RESTORE();
 	return;
 
@@ -419,10 +413,10 @@ PHP_METHOD(yii_base_Object, __call) {
  *
  * - the class has a getter or setter method associated with the specified name
  *   (in this case, property name is case-insensitive);
- * - the class has a member variable with the specified name (when `checkVars` is true);
+ * - the class has a member variable with the specified name (when `$checkVars` is true);
  *
- * @param string name the property name
- * @param boolean checkVars whether to treat member variables as properties
+ * @param string $name the property name
+ * @param boolean $checkVars whether to treat member variables as properties
  * @return boolean whether the property is defined
  * @see canGetProperty()
  * @see canSetProperty()
@@ -471,10 +465,10 @@ PHP_METHOD(yii_base_Object, hasProperty) {
  *
  * - the class has a getter method associated with the specified name
  *   (in this case, property name is case-insensitive);
- * - the class has a member variable with the specified name (when `checkVars` is true);
+ * - the class has a member variable with the specified name (when `$checkVars` is true);
  *
- * @param string name the property name
- * @param boolean checkVars whether to treat member variables as properties
+ * @param string $name the property name
+ * @param boolean $checkVars whether to treat member variables as properties
  * @return boolean whether the property can be read
  * @see canSetProperty()
  */
@@ -518,10 +512,10 @@ PHP_METHOD(yii_base_Object, canGetProperty) {
  *
  * - the class has a setter method associated with the specified name
  *   (in this case, property name is case-insensitive);
- * - the class has a member variable with the specified name (when `checkVars` is true);
+ * - the class has a member variable with the specified name (when `$checkVars` is true);
  *
- * @param string name the property name
- * @param boolean checkVars whether to treat member variables as properties
+ * @param string $name the property name
+ * @param boolean $checkVars whether to treat member variables as properties
  * @return boolean whether the property can be written
  * @see canGetProperty()
  */
@@ -564,8 +558,8 @@ PHP_METHOD(yii_base_Object, canSetProperty) {
  *
  * The default implementation is a call to php function `method_exists()`.
  * You may override this method when you implemented the php magic method `__call()`.
- * @param string name the property name
- * @return boolean whether the property is defined
+ * @param string $name the method name
+ * @return boolean whether the method is defined
  */
 PHP_METHOD(yii_base_Object, hasMethod) {
 

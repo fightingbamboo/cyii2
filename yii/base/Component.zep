@@ -3,11 +3,9 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use yii\BaseYii;
-
 /**
  * Component is the base class that implements the *property*, *event* and *behavior* features.
  *
@@ -26,11 +24,11 @@ use yii\BaseYii;
  *
  * To attach an event handler to an event, call [[on()]]:
  *
- * ~~~
+ * ```php
  * $post->on('update', function ($event) {
  *     // send email notification
  * });
- * ~~~
+ * ```
  *
  * In the above, an anonymous function is attached to the "update" event of the post. You may attach
  * the following types of event handlers:
@@ -42,31 +40,31 @@ use yii\BaseYii;
  *
  * The signature of an event handler should be like the following:
  *
- * ~~~
+ * ```php
  * function foo($event)
- * ~~~
+ * ```
  *
  * where `$event` is an [[Event]] object which includes parameters associated with the event.
  *
  * You can also attach a handler to an event when configuring a component with a configuration array.
  * The syntax is like the following:
  *
- * ~~~
+ * ```php
  * [
  *     'on add' => function ($event) { ... }
  * ]
- * ~~~
+ * ```
  *
  * where `on add` stands for attaching an event to the `add` event.
  *
  * Sometimes, you may want to associate extra data with an event handler when you attach it to an event
  * and then access it when the handler is invoked. You may do so by
  *
- * ~~~
+ * ```php
  * $post->on('update', function ($event) {
  *     // the data can be accessed via $event->data
  * }, $data);
- * ~~~
+ * ```
  *
  * A behavior is an instance of [[Behavior]] or its child class. A component can be attached with one or multiple
  * behaviors. When a behavior is attached to a component, its public properties and methods can be accessed via the
@@ -78,15 +76,15 @@ use yii\BaseYii;
  * One can also attach a behavior to a component when configuring it with a configuration array. The syntax is like the
  * following:
  *
- * ~~~
+ * ```php
  * [
  *     'as tree' => [
  *         'class' => 'Tree',
  *     ],
  * ]
- * ~~~
+ * ```
  *
- * where `as tree` stands for attaching a behavior named `tree`, and the array will be passed to [[\Yii::createObject()]]
+ * where `as tree` stands for attaching a behavior named `tree`, and the array will be passed to [[\BaseYii::createObject()]]
  * to create the behavior object.
  *
  * @property Behavior[] $behaviors List of behaviors attached to this component. This property is read-only.
@@ -100,9 +98,8 @@ class Component extends \yii\base\Object
      * @var array the attached event handlers (event name => handlers)
      */
     protected _events = [];
-
     /**
-     * @var Behavior[] the attached behaviors (behavior name => behavior)
+     * @var Behavior[]|null the attached behaviors (behavior name => behavior). This is `null` when not initialized.
      */
     protected _behaviors;
     /**
@@ -122,22 +119,22 @@ class Component extends \yii\base\Object
      */
     public function __get(string name)
     {
-        var getter, setter;
-        let getter = "get". name,
-            setter = "set". name;
+        var getter, behavior;
 
+        let getter =  "get" . name;
         if method_exists(this, getter) {
+            // read property, e.g. getName()
             return this->{getter}();
         } else {
+            // behavior property
             this->ensureBehaviors();
-            var behavior;
             for behavior in this->_behaviors {
                 if behavior->canGetProperty(name) {
                     return behavior->{name};
                 }
             }
         }
-        if method_exists(this, setter) {
+        if method_exists(this, "set" . name) {
             throw new InvalidCallException("Getting write-only property: " . get_class(this) . "::" . name);
         } else {
             throw new UnknownPropertyException("Getting unknown property: " . get_class(this) . "::" . name);
@@ -163,54 +160,33 @@ class Component extends \yii\base\Object
      */
     public function __set(string name, value)
     {
-        var getter, setter, cmp_result;
+        var setter, behavior;
 
-        let getter = "get". name,
-            setter = "set". name;
-
+        let setter =  "set" . name;
         if method_exists(this, setter) {
             // set property
             this->{setter}(value);
-
             return;
-        }
-        else {
-            let cmp_result = strncmp(name, "on ", 3);
-            if typeof cmp_result != "boolean" && cmp_result == 0 {
-                let name = substr(name, 3),
-                    name = name->trim();
-                // on event: attach event handler
-                this->on(name, value);
-                return;
-            }
-            else {
-                let cmp_result = strncmp(name, "as ", 3);
-                if typeof cmp_result != "boolean" && cmp_result == 0 {
-                    // as behavior: attach behavior
-                    let name = substr(name, 3),
-                        name = name->trim();
-
-                    if typeof value == "object" && (value instanceof Behavior) {
-                        this->attachBehavior(name, value);
-                    }
-                    else {
-                        this->attachBehavior(name, BaseYii::createObject(value));
-                    }
+        } elseif strncmp(name, "on ", 3) === 0 {
+            // on event: attach event handler
+            this->on(trim(substr(name, 3)), value);
+            return;
+        } elseif strncmp(name, "as ", 3) === 0 {
+            // as behavior: attach behavior
+            let name =  trim(substr(name, 3));
+            this->attachBehavior(name,  value instanceof Behavior ? value  : BaseYii::createObject(value));
+            return;
+        } else {
+            // behavior property
+            this->ensureBehaviors();
+            for behavior in this->_behaviors {
+                if behavior->canSetProperty(name) {
+                    let behavior->{name} = value;
                     return;
-                } else {
-                    // behavior property
-                    this->ensureBehaviors();
-                    var behavior;
-                    for behavior in this->_behaviors {
-                        if behavior->canSetProperty(name) {
-                            let behavior->{name} = value;
-                            return;
-                        }
-                    }
                 }
             }
         }
-        if method_exists(this, getter) {
+        if method_exists(this, "get" . name) {
             throw new InvalidCallException("Setting read-only property: " . get_class(this) . "::" . name);
         } else {
             throw new UnknownPropertyException("Setting unknown property: " . get_class(this) . "::" . name);
@@ -218,35 +194,35 @@ class Component extends \yii\base\Object
     }
 
     /**
-     * Checks if a property value is null.
+     * Checks if a property is set, i.e. defined and not null.
      * This method will check in the following order and act accordingly:
      *
-     *  - a property defined by a setter: return whether the property value is null
-     *  - a property of a behavior: return whether the property value is null
+     *  - a property defined by a setter: return whether the property is set
+     *  - a property of a behavior: return whether the property is set
+     *  - return `false` for non existing properties
      *
      * Do not call this method directly as it is a PHP magic method that
      * will be implicitly called when executing `isset($component->property)`.
      * @param string $name the property name or the event name
-     * @return boolean whether the named property is null
+     * @return boolean whether the named property is set
+     * @see http://php.net/manual/en/function.isset.php
      */
     public function __isset(string name) -> boolean
     {
-        var getter;
-        let getter = "get". name;
+        var getter, behavior;
 
+        let getter =  "get" . name;
         if method_exists(this, getter) {
             return this->{getter}() !== null;
         } else {
             // behavior property
             this->ensureBehaviors();
-            var behavior;
             for behavior in this->_behaviors {
                 if behavior->canGetProperty(name) {
                     return behavior->{name} !== null;
                 }
             }
         }
-
         return false;
     }
 
@@ -261,23 +237,22 @@ class Component extends \yii\base\Object
      * will be implicitly called when executing `unset($component->property)`.
      * @param string $name the property name
      * @throws InvalidCallException if the property is read only.
+     * @see http://php.net/manual/en/function.unset.php
      */
-    public function __unset(string $name)
+    public function __unset(string name)
     {
-        var setter;
-        let setter = "set". name;
+        var setter, behavior;
 
+        let setter =  "set" . name;
         if method_exists(this, setter) {
             this->{setter}(null);
-
             return;
         } else {
             // behavior property
             this->ensureBehaviors();
-            var behavior;
             for behavior in this->_behaviors {
                 if behavior->canSetProperty(name) {
-                    let behavior->{name} = null;
+                    let behavior->{name} =  null;
                     return;
                 }
             }
@@ -298,16 +273,17 @@ class Component extends \yii\base\Object
      * @return mixed the method return value
      * @throws UnknownMethodException when calling unknown method
      */
-    public function __call(string name, params)
+    public function __call(string name, array params)
     {
+        var $object, callData;
+
         this->ensureBehaviors();
-        var $object;
         for $object in this->_behaviors {
             if $object->hasMethod(name) {
-                return call_user_func_array([$object, name], params);
+                let callData = [$object, name];
+                return call_user_func_array(callData, params);
             }
         }
-
         throw new UnknownMethodException("Calling unknown method: " . get_class(this) . "::" . name ."()");
     }
 
@@ -315,10 +291,10 @@ class Component extends \yii\base\Object
      * This method is called after the object is created by cloning an existing one.
      * It removes all behaviors because they are attached to the old object.
      */
-    public function __clone()
+    public function __clone() -> void
     {
-        let this->_events = [];
-        let this->_behaviors = null;
+        let this->_events =  [];
+        let this->_behaviors =  null;
     }
 
     /**
@@ -337,7 +313,7 @@ class Component extends \yii\base\Object
      * @see canGetProperty()
      * @see canSetProperty()
      */
-    public function hasProperty(string name, bool checkVars = true, bool checkBehaviors = true)
+    public function hasProperty(string name, boolean checkVars = true, boolean checkBehaviors = true) -> boolean
     {
         return this->canGetProperty(name, checkVars, checkBehaviors) || this->canSetProperty(name, false, checkBehaviors);
     }
@@ -357,25 +333,20 @@ class Component extends \yii\base\Object
      * @return boolean whether the property can be read
      * @see canSetProperty()
      */
-    public function canGetProperty(string name, bool checkVars = true, bool checkBehaviors = true) -> boolean
+    public function canGetProperty(string name, boolean checkVars = true, boolean checkBehaviors = true) -> boolean
     {
-        var getter;
-        let getter = "get" . name;
+        var behavior;
 
-        if method_exists(this, getter) || checkVars && property_exists(this, name) {
+        if method_exists(this, "get" . name) || checkVars && property_exists(this, name) {
             return true;
-        }
-
-        if checkBehaviors {
+        } elseif checkBehaviors {
             this->ensureBehaviors();
-            var behavior;
             for behavior in this->_behaviors {
                 if behavior->canGetProperty(name, checkVars) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -394,25 +365,20 @@ class Component extends \yii\base\Object
      * @return boolean whether the property can be written
      * @see canGetProperty()
      */
-    public function canSetProperty(string name, bool checkVars = true, bool checkBehaviors = true) -> boolean
+    public function canSetProperty(string name, boolean checkVars = true, boolean checkBehaviors = true) -> boolean
     {
-        var setter;
-        let setter = "set". name;
+        var behavior;
 
-        if method_exists(this, setter) || checkVars && property_exists(this, name) {
+        if method_exists(this, "set" . name) || checkVars && property_exists(this, name) {
             return true;
-        }
-
-        if checkBehaviors {
+        } elseif checkBehaviors {
             this->ensureBehaviors();
-            var behavior;
             for behavior in this->_behaviors {
                 if behavior->canSetProperty(name, checkVars) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -427,22 +393,20 @@ class Component extends \yii\base\Object
      * @param boolean $checkBehaviors whether to treat behaviors' methods as methods of this component
      * @return boolean whether the property is defined
      */
-    public function hasMethod(string name, bool checkBehaviors = true) -> boolean
+    public function hasMethod(string name, boolean checkBehaviors = true) -> boolean
     {
+        var behavior;
+
         if method_exists(this, name) {
             return true;
-        }
-
-        if checkBehaviors {
+        } elseif checkBehaviors {
             this->ensureBehaviors();
-            var behavior;
             for behavior in this->_behaviors {
                 if behavior->hasMethod(name) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -455,24 +419,23 @@ class Component extends \yii\base\Object
      * indexed by behavior names. A behavior configuration can be either a string specifying
      * the behavior class or an array of the following structure:
      *
-     * ~~~
+     * ```php
      * 'behaviorName' => [
      *     'class' => 'BehaviorClass',
      *     'property1' => 'value1',
      *     'property2' => 'value2',
      * ]
-     * ~~~
+     * ```
      *
-     * Note that a behavior class must extend from [[Behavior]]. Behavior names can be strings
-     * or integers. If the former, they uniquely identify the behaviors. If the latter, the corresponding
-     * behaviors are anonymous and their properties and methods will NOT be made available via the component
-     * (however, the behaviors can still respond to the component's events).
+     * Note that a behavior class must extend from [[Behavior]]. Behaviors can be attached using a name or anonymously.
+     * When a name is used as the array key, using this name, the behavior can later be retrieved using [[getBehavior()]]
+     * or be detached using [[detachBehavior()]]. Anonymous behaviors can not be retrieved or detached.
      *
      * Behaviors declared in this method will be attached to the component automatically (on demand).
      *
      * @return array the behavior configurations.
      */
-    public function behaviors()
+    public function behaviors() -> array
     {
         return [];
     }
@@ -485,32 +448,27 @@ class Component extends \yii\base\Object
     public function hasEventHandlers(string name) -> boolean
     {
         this->ensureBehaviors();
-        if isset this->_events[name] && !empty this->_events[name] {
-            return true;
-        }
-        else {
-            return Event::hasHandlers(this, name);
-        }
+        return ( isset this->_events[name] && !empty(this->_events[name]) ) || Event::hasHandlers(this, name);
     }
 
     /**
      * Attaches an event handler to an event.
      *
-     * The event handler must be a valid PHP callback. The followings are
+     * The event handler must be a valid PHP callback. The following are
      * some examples:
      *
-     * ~~~
+     * ```
      * function ($event) { ... }         // anonymous function
      * [$object, 'handleClick']          // $object->handleClick()
      * ['Page', 'handleClick']           // Page::handleClick()
      * 'handleClick'                     // global function handleClick()
-     * ~~~
+     * ```
      *
      * The event handler must be defined with the following signature,
      *
-     * ~~~
+     * ```
      * function ($event)
-     * ~~~
+     * ```
      *
      * where `$event` is an [[Event]] object which includes parameters associated with the event.
      *
@@ -523,49 +481,17 @@ class Component extends \yii\base\Object
      * handler list.
      * @see off()
      */
-    public function on(string name, handler, data = null, bool append = true)
+    public function on(string name, handler, data = null, boolean append = true) -> void
     {
+        var handlerData;
+
         this->ensureBehaviors();
-
-        var events, event;
-
-        let events = this->_events;
-        if typeof events != "array" {
-            let events = [];
-        }
-
-        var elements = [];
-        let elements[] = handler,
-            elements[] = data;
-
-        if append == true || !isset events[name] || empty events[name] {
-            if isset events[name] {
-                let event = events[name];
-            }
-            else {
-                let event = [];
-            }
-            if typeof event != "array" {
-                let event = [];
-            }
-            let event[] = elements,
-                events[name] = event;
+        if append || ( !isset this->_events[name] || empty(this->_events[name]) ) {
+            let this->_events[name][] =  [handler, data];
         } else {
-            if isset events[name] {
-                let event = events[name];
-            }
-            else {
-                let event = [];
-            }
-
-            if typeof event != "array" {
-                let event = [];
-            }
-            array_unshift(event, elements);
-            let events[name] = event;
+            let handlerData = [handler, data];
+            array_unshift(this->_events[name], handlerData);
         }
-
-        let this->_events = events;
     }
 
     /**
@@ -579,42 +505,28 @@ class Component extends \yii\base\Object
      */
     public function off(string name, handler = null)
     {
-        var removed, events, temp_event, removed_temp_event;
+        var removed, i, event;
 
         this->ensureBehaviors();
-
-        if !isset this->_events[name] || empty this->_events[name] {
+        if !isset this->_events[name] || empty(this->_events[name]) {
             return false;
         }
+        if handler === null {
+            unset this->_events[name];
 
-        let events = this->_events;
-
-        if typeof handler == "null" {
-            if isset events[name] {
-                unset events[name];
-            }
-            let this->_events = events;
             return true;
         } else {
-            let removed = false;
-            var i, event;
+            let removed =  false;
             for i, event in this->_events[name] {
-                if event[0] == handler {
-                    let temp_event = events[name];
-                    unset temp_event[i];
+                if event[0] === handler {
+                    unset this->_events[name][i];
 
-                    let events[name] = temp_event,
-                        removed = true;
+                    let removed =  true;
                 }
             }
-
-            if (removed) {
-                let removed_temp_event = events[name],
-                    removed_temp_event = array_values(removed_temp_event),
-                    events[name] = removed_temp_event,
-                    this->_events = events;
+            if removed {
+                let this->_events[name] =  array_values(this->_events[name]);
             }
-
             return removed;
         }
     }
@@ -626,31 +538,26 @@ class Component extends \yii\base\Object
      * @param string $name the event name
      * @param Event $event the event parameter. If not set, a default [[Event]] object will be created.
      */
-    public function trigger( name, event = null)
+    public function trigger(string name, <Event> event = null)
     {
+        var handler;
+
         this->ensureBehaviors();
-
-        if  isset this->_events[name] && !empty this->_events[name] {
-            if  event === null {
-                let event = new Event;
+        if isset this->_events[name] && !empty(this->_events[name]) {
+            if event === null {
+                let event =  new Event();
             }
-
             if event->sender === null {
                 let event->sender = this;
             }
-
-            let event->handled = false;
+            let event->handled =  false;
             let event->name = name;
-
-            var handler;
             for handler in this->_events[name] {
-                if typeof handler == "array" && count(handler) >= 2 {
-                    let event->data = handler[1];
-                    call_user_func(handler[0], event);
-                    // stop further handling if the event is handled
-                    if event->handled {
-                        return;
-                    }
+                let event->data = handler[1];
+                call_user_func(handler[0], event);
+                // stop further handling if the event is handled
+                if event->handled {
+                    return;
                 }
             }
         }
@@ -661,23 +568,21 @@ class Component extends \yii\base\Object
     /**
      * Returns the named behavior object.
      * @param string $name the behavior name
-     * @return Behavior the behavior object, or null if the behavior does not exist
+     * @return null|Behavior the behavior object, or null if the behavior does not exist
      */
     public function getBehavior(string name)
     {
         this->ensureBehaviors();
-
-        return isset this->_behaviors[name] ? this->_behaviors[name] : null;
+        return  isset this->_behaviors[name] ? this->_behaviors[name]  : null;
     }
 
     /**
      * Returns all behaviors attached to this component.
      * @return Behavior[] list of behaviors attached to this component
      */
-    public function getBehaviors()
+    public function getBehaviors() -> array
     {
         this->ensureBehaviors();
-
         return this->_behaviors;
     }
 
@@ -691,15 +596,14 @@ class Component extends \yii\base\Object
      *
      *  - a [[Behavior]] object
      *  - a string specifying the behavior class
-     *  - an object configuration array that will be passed to [[Yii::createObject()]] to create the behavior object.
+     *  - an object configuration array that will be passed to [[BaseYii::createObject()]] to create the behavior object.
      *
      * @return Behavior the behavior object
      * @see detachBehavior()
      */
-    public function attachBehavior(string name, behavior)
+    public function attachBehavior(string name, behavior) -> <Behavior>
     {
         this->ensureBehaviors();
-
         return this->attachBehaviorInternal(name, behavior);
     }
 
@@ -710,11 +614,11 @@ class Component extends \yii\base\Object
      * @param array $behaviors list of behaviors to be attached to the component
      * @see attachBehavior()
      */
-    public function attachBehaviors(behaviors)
+    public function attachBehaviors(array behaviors) -> void
     {
-        this->ensureBehaviors();
-
         var name, behavior;
+
+        this->ensureBehaviors();
         for name, behavior in behaviors {
             this->attachBehaviorInternal(name, behavior);
         }
@@ -724,17 +628,17 @@ class Component extends \yii\base\Object
      * Detaches a behavior from the component.
      * The behavior's [[Behavior::detach()]] method will be invoked.
      * @param string $name the behavior's name.
-     * @return Behavior the detached behavior. Null if the behavior does not exist.
+     * @return null|Behavior the detached behavior. Null if the behavior does not exist.
      */
     public function detachBehavior(string name)
     {
-        var behavior, behaviors;
-        this->ensureBehaviors();
-        let behaviors = this->_behaviors;
+        var behavior;
 
-        if fetch behavior, behaviors[name] {
-            unset behaviors[name];
-            let this->_behaviors = behaviors;
+        this->ensureBehaviors();
+        if isset this->_behaviors[name] {
+            let behavior = this->_behaviors[name];
+            unset this->_behaviors[name];
+
             behavior->detach();
             return behavior;
         } else {
@@ -745,12 +649,12 @@ class Component extends \yii\base\Object
     /**
      * Detaches all behaviors from the component.
      */
-    public function detachBehaviors()
+    public function detachBehaviors() -> void
     {
-        var name, behavior, behaviors;
+        var name, behavior;
+
         this->ensureBehaviors();
-        let behaviors = this->_behaviors;
-        for name, behavior in behaviors {
+        for name, behavior in this->_behaviors {
             this->detachBehavior(name);
         }
     }
@@ -758,14 +662,13 @@ class Component extends \yii\base\Object
     /**
      * Makes sure that the behaviors declared in [[behaviors()]] are attached to this component.
      */
-    public function ensureBehaviors()
+    public function ensureBehaviors() -> void
     {
-        if  typeof this->_behaviors == "null" {
-            let this->_behaviors = [];
+        var name, behavior;
 
-            var name, behavior, behaviors;
-            let behaviors = this->_behaviors;
-            for name, behavior in behaviors {
+        if this->_behaviors === null {
+            let this->_behaviors =  [];
+            for name, behavior in this->behaviors() {
                 this->attachBehaviorInternal(name, behavior);
             }
         }
@@ -773,16 +676,18 @@ class Component extends \yii\base\Object
 
     /**
      * Attaches a behavior to this component.
-     * @param string $name the name of the behavior.
+     * @param string|integer $name the name of the behavior. If this is an integer, it means the behavior
+     * is an anonymous one. Otherwise, the behavior is a named one and any existing behavior with the same name
+     * will be detached first.
      * @param string|array|Behavior $behavior the behavior to be attached
      * @return Behavior the attached behavior.
      */
-    protected function attachBehaviorInternal(name, behavior)
+    protected function attachBehaviorInternal(name, behavior) -> <Behavior>
     {
         if !(behavior instanceof Behavior) {
-            let behavior = BaseYii::createObject(behavior);
+            let behavior =  BaseYii::createObject(behavior);
         }
-        if typeof name == "int" {
+        if is_int(name) {
             behavior->attach(this);
             let this->_behaviors[] = behavior;
         } else {
@@ -794,4 +699,5 @@ class Component extends \yii\base\Object
         }
         return behavior;
     }
+
 }

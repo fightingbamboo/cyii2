@@ -6,19 +6,19 @@
 namespace yii\base;
 
 /**
- * InvalidCallException represents an exception caused by calling a method in a wrong way.
+ * ViewNotFoundException represents an exception caused by view file not found.
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
+ * @author Alexander Makarov
+ * @since 2.0.10
  */
-class InvalidCallException extends \BadMethodCallException
+class ViewNotFoundException extends InvalidParamException
 {
     /**
      * @return string the user-friendly name of this exception
      */
     public function getName() -> string
     {
-        return "Invalid Call";
+        return "View not Found";
     }
 
 }

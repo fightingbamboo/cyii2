@@ -15,6 +15,7 @@
 #include "kernel/object.h"
 #include "kernel/fcall.h"
 #include "kernel/memory.h"
+#include "kernel/operators.h"
 
 
 /**
@@ -64,14 +65,17 @@ PHP_METHOD(yii_base_ActionEvent, __construct) {
 
 	int ZEPHIR_LAST_CALL_STATUS;
 	zephir_fcall_cache_entry *_0 = NULL;
-	zval *action, *config = NULL;
+	zval *config = NULL;
+	zval *action, *config_param = NULL;
 
 	ZEPHIR_MM_GROW();
-	zephir_fetch_params(1, 1, 1, &action, &config);
+	zephir_fetch_params(1, 1, 1, &action, &config_param);
 
-	if (!config) {
+	if (!config_param) {
 		ZEPHIR_INIT_VAR(config);
 		array_init(config);
+	} else {
+		zephir_get_arrval(config, config_param);
 	}
 
 

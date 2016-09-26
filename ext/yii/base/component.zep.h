@@ -47,7 +47,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_component___call, 0, 0, 2)
 	ZEND_ARG_INFO(0, name)
-	ZEND_ARG_INFO(0, params)
+	ZEND_ARG_ARRAY_INFO(0, params, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_component_hasproperty, 0, 0, 1)
@@ -91,7 +91,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_component_trigger, 0, 0, 1)
 	ZEND_ARG_INFO(0, name)
-	ZEND_ARG_INFO(0, event)
+	ZEND_ARG_OBJ_INFO(0, event, yii\\base\\Event, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_component_getbehavior, 0, 0, 1)
@@ -104,7 +104,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_component_attachbehavior, 0, 0, 2)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_component_attachbehaviors, 0, 0, 1)
-	ZEND_ARG_INFO(0, behaviors)
+	ZEND_ARG_ARRAY_INFO(0, behaviors, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_component_detachbehavior, 0, 0, 1)

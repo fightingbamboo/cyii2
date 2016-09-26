@@ -11,7 +11,7 @@ PHP_METHOD(yii_base_Event, trigger);
 void zephir_init_static_properties_yii_base_Event(TSRMLS_D);
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_event_on, 0, 0, 3)
-	ZEND_ARG_INFO(0, class)
+	ZEND_ARG_INFO(0, classs)
 	ZEND_ARG_INFO(0, name)
 	ZEND_ARG_INFO(0, handler)
 	ZEND_ARG_INFO(0, data)
@@ -19,20 +19,20 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_event_on, 0, 0, 3)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_event_off, 0, 0, 2)
-	ZEND_ARG_INFO(0, class)
+	ZEND_ARG_INFO(0, classs)
 	ZEND_ARG_INFO(0, name)
 	ZEND_ARG_INFO(0, handler)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_event_hashandlers, 0, 0, 2)
-	ZEND_ARG_INFO(0, class)
+	ZEND_ARG_INFO(0, classs)
 	ZEND_ARG_INFO(0, name)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_event_trigger, 0, 0, 2)
-	ZEND_ARG_INFO(0, class)
+	ZEND_ARG_INFO(0, classs)
 	ZEND_ARG_INFO(0, name)
-	ZEND_ARG_INFO(0, event)
+	ZEND_ARG_OBJ_INFO(0, event, yii\\base\\Event, 1)
 ZEND_END_ARG_INFO()
 
 ZEPHIR_INIT_FUNCS(yii_base_event_method_entry) {

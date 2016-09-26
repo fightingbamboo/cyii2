@@ -152,7 +152,7 @@ PHP_METHOD(yii_log_Logger, init) {
 
 	ZEPHIR_MM_GROW();
 
-	ZEPHIR_CALL_PARENT(NULL, yii_log_logger_ce, this_ptr, "init", &_0, 35);
+	ZEPHIR_CALL_PARENT(NULL, yii_log_logger_ce, this_ptr, "init", &_0, 22);
 	zephir_check_call_status();
 	ZEPHIR_INIT_VAR(_1);
 	zephir_create_array(_1, 2, 0 TSRMLS_CC);
@@ -160,7 +160,7 @@ PHP_METHOD(yii_log_Logger, init) {
 	ZEPHIR_INIT_VAR(_2);
 	ZVAL_STRING(_2, "flush", 1);
 	zephir_array_fast_append(_1, _2);
-	ZEPHIR_CALL_FUNCTION(NULL, "register_shutdown_function", NULL, 36, _1, ZEPHIR_GLOBAL(global_true));
+	ZEPHIR_CALL_FUNCTION(NULL, "register_shutdown_function", NULL, 23, _1, ZEPHIR_GLOBAL(global_true));
 	zephir_check_call_status();
 	ZEPHIR_MM_RESTORE();
 
@@ -201,10 +201,10 @@ PHP_METHOD(yii_log_Logger, log) {
 	_0 = zephir_fetch_nproperty_this(this_ptr, SL("traceLevel"), PH_NOISY_CC);
 	if (ZEPHIR_GT_LONG(_0, 0)) {
 		count = 0;
-		ZEPHIR_CALL_FUNCTION(&ts, "debug_backtrace", NULL, 37);
+		ZEPHIR_CALL_FUNCTION(&ts, "debug_backtrace", NULL, 24);
 		zephir_check_call_status();
 		ZEPHIR_MAKE_REF(ts);
-		ZEPHIR_CALL_FUNCTION(NULL, "array_pop", NULL, 38, ts);
+		ZEPHIR_CALL_FUNCTION(NULL, "array_pop", NULL, 25, ts);
 		ZEPHIR_UNREF(ts);
 		zephir_check_call_status();
 		zephir_is_iterable(ts, &_2$$3, &_1$$3, 0, 0, "yii/log/Logger.zep", 164);
@@ -432,7 +432,7 @@ PHP_METHOD(yii_log_Logger, getProfiling) {
 	}
 	zend_hash_destroy(_3);
 	FREE_HASHTABLE(_3);
-	ZEPHIR_RETURN_CALL_FUNCTION("array_values", NULL, 9, timings);
+	ZEPHIR_RETURN_CALL_FUNCTION("array_values", NULL, 6, timings);
 	zephir_check_call_status();
 	RETURN_MM();
 
@@ -534,7 +534,7 @@ PHP_METHOD(yii_log_Logger, calculateTimings) {
 		}
 		if (ZEPHIR_IS_LONG(level$$3, 0x60)) {
 			ZEPHIR_MAKE_REF(stack);
-			ZEPHIR_CALL_FUNCTION(&last$$5, "array_pop", &_3, 38, stack);
+			ZEPHIR_CALL_FUNCTION(&last$$5, "array_pop", &_3, 25, stack);
 			ZEPHIR_UNREF(stack);
 			zephir_check_call_status();
 			_4$$5 = Z_TYPE_P(last$$5) != IS_NULL;
@@ -572,10 +572,10 @@ PHP_METHOD(yii_log_Logger, calculateTimings) {
 		}
 	}
 	ZEPHIR_MAKE_REF(timings);
-	ZEPHIR_CALL_FUNCTION(NULL, "ksort", NULL, 39, timings);
+	ZEPHIR_CALL_FUNCTION(NULL, "ksort", NULL, 26, timings);
 	ZEPHIR_UNREF(timings);
 	zephir_check_call_status();
-	ZEPHIR_RETURN_CALL_FUNCTION("array_values", NULL, 9, timings);
+	ZEPHIR_RETURN_CALL_FUNCTION("array_values", NULL, 6, timings);
 	zephir_check_call_status();
 	RETURN_MM();
 

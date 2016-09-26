@@ -3,7 +3,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -30,15 +29,15 @@ class ActionEvent extends Event
      * to continue running the current action.
      */
     public isValid = true;
-
     /**
      * Constructor.
      * @param Action $action the action associated with this action event.
      * @param array $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct(action, config = [])
+    public function __construct(<Action> action, array config = []) -> void
     {
         let this->action = action;
         parent::__construct(config);
     }
+
 }

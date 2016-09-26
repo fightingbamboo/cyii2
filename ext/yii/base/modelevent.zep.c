@@ -20,9 +20,7 @@
  * @license http://www.yiiframework.com/license/
  */
 /**
- * ModelEvent class.
- *
- * ModelEvent represents the parameter needed by model events.
+ * ModelEvent represents the parameter needed by [[Model]] events.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0

@@ -9,7 +9,6 @@ use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
 use yii\base\UnknownClassException;
 use yii\log\Logger;
-use yii\di\Container;
 
 /**
  * BaseYii is the core helper class for the Yii framework.
@@ -362,19 +361,19 @@ class BaseYii
      * @throws InvalidConfigException if the configuration is invalid.
      * @see \yii\di\Container
      */
-    public static function createObject(type, array params = [])
+    public static function createObject(var type, array params = [])
     {
         if typeof type == "string" {
             return $static::$container->get(type, params);
         } elseif typeof type == "array" && isset type["class"] {
-            var $class;
-            let $class = type["class"];
+            var class_name;
+            let class_name = type["class"];
             unset type["class"];
-            return $static::$container->get($class, params, type);
+            return $static::$container->get(class_name, params, type);
         } elseif is_callable(type, true) {
             return $static::$container->invoke(type, params);
         } elseif typeof type == "array" {
-            string text = "class";
+            var text = "class";
             throw new InvalidConfigException("Object configuration must be an array containing a \"". text ."\" element.");
         } else {
             throw new InvalidConfigException("Unsupported configuration type: " . gettype(type));

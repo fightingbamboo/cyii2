@@ -6,8 +6,8 @@ ZEPHIR_INIT_CLASS(yii_base_ActionEvent);
 PHP_METHOD(yii_base_ActionEvent, __construct);
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yii_base_actionevent___construct, 0, 0, 1)
-	ZEND_ARG_INFO(0, action)
-	ZEND_ARG_INFO(0, config)
+	ZEND_ARG_OBJ_INFO(0, action, yii\\base\\Action, 0)
+	ZEND_ARG_ARRAY_INFO(0, config, 1)
 ZEND_END_ARG_INFO()
 
 ZEPHIR_INIT_FUNCS(yii_base_actionevent_method_entry) {

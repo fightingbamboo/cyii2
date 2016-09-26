@@ -6,19 +6,19 @@
 namespace yii\base;
 
 /**
- * InvalidCallException represents an exception caused by calling a method in a wrong way.
+ * InvalidValueException represents an exception caused by a function returning a value of unexpected type.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class InvalidCallException extends \BadMethodCallException
+class InvalidValueException extends \UnexpectedValueException
 {
     /**
      * @return string the user-friendly name of this exception
      */
     public function getName() -> string
     {
-        return "Invalid Call";
+        return "Invalid Return Value";
     }
 
 }
