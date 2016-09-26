@@ -16,15 +16,33 @@
 #### ./yii2/framework/di/Container.php
 
 ```php
-@@ -428,7 +428,7 @@ class Container extends Component
+@@ -426,6 +426,8 @@ class Container extends Component
+             foreach ($constructor->getParameters() as $param) {
+                 if ($param->isDefaultValueAvailable()) {
                      $dependencies[] = $param->getDefaultValue();
++                } elseif ($param->getName() == "config") {
++                    $dependencies[] = [];
                  } else {
                      $c = $param->getClass();
--                    $dependencies[] = Instance::of($c === null ? null : $c->getName());
-+                    $dependencies[] = $c === null ? [] : Instance::of( $c->getName());
-                 }
-             }
-         }
+                     $dependencies[] = Instance::of($c === null ? null : $c->getName());
+@@ -540,6 +542,8 @@ class Container extends Component
+                     } catch (NotInstantiableException $e) {
+                         if ($param->isDefaultValueAvailable()) {
+                             $args[] = $param->getDefaultValue();
++                        } elseif ($param->getName() == "config") {
++                            $dependencies[] = [];
+                         } else {
+                             throw $e;
+                         }
+@@ -553,6 +557,8 @@ class Container extends Component
+                 $args[] = array_shift($params);
+             } elseif ($param->isDefaultValueAvailable()) {
+                 $args[] = $param->getDefaultValue();
++            } elseif ($name == "config") {
++                $args[] = [];
+             } elseif (!$param->isOptional()) {
+                 $funcName = $reflection->getName();
+                 throw new InvalidConfigException("Missing required parameter \"$name\" when calling \"$funcName\".");
 ```
 #### ./vendor/phalcon/zephir/Library/CompilerFile.php
 
