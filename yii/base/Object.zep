@@ -5,7 +5,7 @@
  */
 namespace yii\base;
 
-use yii\BaseYii;
+use Yii;
 /**
  * Object is the base class that implements the *property* feature.
  *
@@ -99,7 +99,7 @@ class $Object implements Configurable
     public function __construct(array config = []) -> void
     {
         if !(empty(config)) {
-            BaseYii::configure(this, config);
+            Yii::configure(this, config);
         }
         this->init();
     }

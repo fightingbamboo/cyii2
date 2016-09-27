@@ -11,7 +11,7 @@ namespace yii\web;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Link extends yii\base\Object
+class Link extends \yii\base\Object
 {
     /**
      * The self link.

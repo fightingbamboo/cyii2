@@ -6,7 +6,7 @@
 
 namespace yii\log;
 
-use yii\BaseYii;
+use Yii;
 use yii\base\Component;
 
 /**
