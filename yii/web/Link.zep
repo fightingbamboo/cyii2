@@ -3,7 +3,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -12,13 +11,12 @@ namespace yii\web;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Link extends \yii\base\Object
+class Link extends yii\base\Object
 {
     /**
      * The self link.
      */
     const REL_SELF = "self";
-
     /**
      * @var string a URI [RFC3986](https://tools.ietf.org/html/rfc3986) or
      * URI template [RFC6570](https://tools.ietf.org/html/rfc6570). This property is required.
@@ -48,43 +46,26 @@ class Link extends \yii\base\Object
      * @var string the language of the target resource
      */
     public hreflang;
-
     /**
      * Serializes a list of links into proper array format.
      * @param array $links the links to be serialized
      * @return array the proper array representation of the links.
      */
-    public static function serialize(links)
+    public static function serialize(array links) -> array
     {
-        var temp_links, link, rel, i, l, temp_link;
-        let temp_links = links;
-
-        for rel, temp_link in temp_links {
-            let link = temp_link;
-
-            if typeof temp_link == "array" {
-                for i, l in temp_link {
-                    var temp_l = [];
-                    if typeof l == "object" {
-                        if l instanceof Link {
-
-                            let link[i] = array_filter( (array)l );
-                        }
-                        else {
-                            let temp_l["href"] = l;
-                            let link[i] = temp_l;
-                        }
-                    }
+        var rel, link, i, l;
+    
+        for rel, link in links {
+            if is_array(link) {
+                for i, l in link {
+                    let link[i] =  l instanceof self ? array_filter((array) l)  : ["href" : l];
                 }
                 let links[rel] = link;
-            } else {
-                if typeof temp_link == "object" {
-                    if !(temp_link instanceof Link) {
-                        let links[rel]["href"] =  link;
-                    }
-                }
+            } elseif !(link instanceof self) {
+                let links[rel] =  ["href" : link];
             }
         }
         return links;
     }
+
 }

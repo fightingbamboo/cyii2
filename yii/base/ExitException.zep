@@ -3,6 +3,7 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
+
 namespace yii\base;
 
 /**
@@ -19,6 +20,8 @@ class ExitException extends \Exception
      * @var integer the exit status code
      */
     public statusCode;
+
+
     /**
      * Constructor.
      * @param integer $status the exit status code
@@ -26,10 +29,9 @@ class ExitException extends \Exception
      * @param integer $code error code
      * @param \Exception $previous The previous exception used for the exception chaining.
      */
-    public function __construct(int status = 0, string message = null, int code = 0, <Exception> previous = null) -> void
+    public function __construct(int status = 0, message = null, code = 0, previous = null)
     {
         let this->statusCode = status;
         parent::__construct(message, code, previous);
     }
-
 }

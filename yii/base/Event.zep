@@ -83,7 +83,7 @@ class Event extends \yii\base\Object
         var tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125;
     
         let classs =  ltrim(classs, "\\");
-        if append || empty(self::_events[name][classs]) {
+        if append || ( !isset self::_events[name] || !isset self::_events[name][classs] || empty(self::_events[name][classs])) {
             let self::_events[name][classs][] =  [handler, data];
         } else {
             let tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125 = [handler, data];
@@ -165,7 +165,7 @@ class Event extends \yii\base\Object
         let tmpArray9613f42f8264d80e17bfc80cc7a471fb = [classs];
         let classes =  array_merge(tmpArray9613f42f8264d80e17bfc80cc7a471fb, class_parents(classs, true), class_implements(classs, true));
         for classs in classes {
-            if !(empty(self::_events[name][classs])) {
+            if  isset self::_events[name][classs] && !empty(self::_events[name][classs]) {
                 return true;
             }
         }
@@ -203,7 +203,7 @@ class Event extends \yii\base\Object
         let tmpArray94fd3581f8118e54e2778c97fdb99a2e = [classs];
         let classes =  array_merge(tmpArray94fd3581f8118e54e2778c97fdb99a2e, class_parents(classs, true), class_implements(classs, true));
         for classs in classes {
-            if !(empty(self::_events[name][classs])) {
+            if  isset self::_events[name][classs] && !empty(self::_events[name][classs]) {
                 for handler in self::_events[name][classs] {
                     let event->data = handler[1];
                     call_user_func(handler[0], event);

@@ -3,7 +3,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -37,5 +36,6 @@ interface Linkable
      *
      * @return array the links
      */
-    public function getLinks();
+    public function getLinks() -> array;
+
 }

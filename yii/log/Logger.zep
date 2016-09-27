@@ -216,13 +216,13 @@ class Logger extends Component
     {
         var timings;
         let timings = this->calculateTimings(this->messages);
-        if (empty categories) && (empty excludeCategories) {
+        if empty(categories) && empty(excludeCategories) {
             return timings;
         }
         var i, timing, prefix;
         for i, timing in timings {
             var matched, category;
-            let matched = empty categories;
+            let matched = empty(categories);
             for category in categories {
                 let prefix = rtrim(category, "*");
                 if timing["category"]->index(prefix) === 0 && (timing["category"] === category || prefix !== category) {

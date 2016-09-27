@@ -3,7 +3,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -19,26 +18,27 @@ class Response extends Component
      * The status 0 means the program terminates successfully.
      */
     public exitStatus = 0;
-
     /**
      * Sends the response to client.
      */
-    public function send()
+    public function send() -> void
     {
     }
-
+    
     /**
      * Removes all existing output buffers.
      */
-    public function clearOutputBuffers()
+    public function clearOutputBuffers() -> void
     {
         var level;
-        let level = ob_get_level();
+    
         // the following manual level counting is to deal with zlib.output_compression set to On
-        while level > 0 {
-            ob_clean();
-            ob_end_clean();
-            let level -= level;
+        let level =  ob_get_level();
+        for level in range(ob_get_level(), 0) {
+            if !(ob_end_clean()) {
+                ob_clean();
+            }
         }
     }
+
 }

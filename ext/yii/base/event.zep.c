@@ -15,8 +15,8 @@
 #include "kernel/memory.h"
 #include "kernel/string.h"
 #include "kernel/operators.h"
-#include "kernel/object.h"
 #include "kernel/array.h"
+#include "kernel/object.h"
 #include "kernel/fcall.h"
 #include "kernel/hash.h"
 
@@ -112,10 +112,10 @@ ZEPHIR_INIT_CLASS(yii_base_Event) {
  */
 PHP_METHOD(yii_base_Event, on) {
 
-	zval *_6$$3;
+	zval *_11$$3;
 	int ZEPHIR_LAST_CALL_STATUS;
-	zend_bool append, _2;
-	zval *classs_param = NULL, *name_param = NULL, *handler, *data = NULL, *append_param = NULL, *tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125 = NULL, *_0, _1, *_3, *_4, *_5, *_7$$4, *_8$$4, *_9$$4;
+	zend_bool append, _2, _4, _7;
+	zval *classs_param = NULL, *name_param = NULL, *handler, *data = NULL, *append_param = NULL, *tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125 = NULL, *_0, _1, *_3, *_5, *_6, *_8, *_9, *_10, *_12$$4, *_13$$4, *_14$$4;
 	zval *classs = NULL, *name = NULL;
 
 	ZEPHIR_MM_GROW();
@@ -141,28 +141,39 @@ PHP_METHOD(yii_base_Event, on) {
 	_2 = append;
 	if (!(_2)) {
 		_3 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
-		zephir_array_fetch(&_4, _3, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 86 TSRMLS_CC);
-		ZEPHIR_OBS_VAR(_5);
-		zephir_array_fetch(&_5, _4, classs, PH_NOISY, "yii/base/Event.zep", 86 TSRMLS_CC);
-		_2 = ZEPHIR_IS_EMPTY(_5);
+		_4 = !(zephir_array_isset(_3, name));
+		if (!(_4)) {
+			_5 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
+			zephir_array_fetch(&_6, _5, name, PH_READONLY, "yii/base/Event.zep", 86 TSRMLS_CC);
+			_4 = !(zephir_array_isset(_6, classs));
+		}
+		_7 = _4;
+		if (!(_7)) {
+			_8 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
+			zephir_array_fetch(&_9, _8, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 86 TSRMLS_CC);
+			ZEPHIR_OBS_VAR(_10);
+			zephir_array_fetch(&_10, _9, classs, PH_NOISY, "yii/base/Event.zep", 86 TSRMLS_CC);
+			_7 = ZEPHIR_IS_EMPTY(_10);
+		}
+		_2 = _7;
 	}
 	if (_2) {
-		ZEPHIR_INIT_VAR(_6$$3);
-		zephir_create_array(_6$$3, 2, 0 TSRMLS_CC);
-		zephir_array_fast_append(_6$$3, handler);
-		zephir_array_fast_append(_6$$3, data);
-		zephir_update_static_property_array_multi_ce(yii_base_event_ce, SL("_events"), &_6$$3 TSRMLS_CC, SL("zza"), 3, name, classs);
+		ZEPHIR_INIT_VAR(_11$$3);
+		zephir_create_array(_11$$3, 2, 0 TSRMLS_CC);
+		zephir_array_fast_append(_11$$3, handler);
+		zephir_array_fast_append(_11$$3, data);
+		zephir_update_static_property_array_multi_ce(yii_base_event_ce, SL("_events"), &_11$$3 TSRMLS_CC, SL("zza"), 3, name, classs);
 	} else {
 		ZEPHIR_INIT_VAR(tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125);
 		zephir_create_array(tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125, 2, 0 TSRMLS_CC);
 		zephir_array_fast_append(tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125, handler);
 		zephir_array_fast_append(tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125, data);
-		_7$$4 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
-		zephir_array_fetch(&_8$$4, _7$$4, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 90 TSRMLS_CC);
-		zephir_array_fetch(&_9$$4, _8$$4, classs, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 90 TSRMLS_CC);
-		ZEPHIR_MAKE_REF(_9$$4);
-		ZEPHIR_CALL_FUNCTION(NULL, "array_unshift", NULL, 5, _9$$4, tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125);
-		ZEPHIR_UNREF(_9$$4);
+		_12$$4 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
+		zephir_array_fetch(&_13$$4, _12$$4, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 90 TSRMLS_CC);
+		zephir_array_fetch(&_14$$4, _13$$4, classs, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 90 TSRMLS_CC);
+		ZEPHIR_MAKE_REF(_14$$4);
+		ZEPHIR_CALL_FUNCTION(NULL, "array_unshift", NULL, 8, _14$$4, tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125);
+		ZEPHIR_UNREF(_14$$4);
 		zephir_check_call_status();
 	}
 	ZEPHIR_MM_RESTORE();
@@ -253,7 +264,7 @@ PHP_METHOD(yii_base_Event, off) {
 			_22$$8 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
 			zephir_array_fetch(&_23$$8, _22$$8, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 128 TSRMLS_CC);
 			zephir_array_fetch(&_24$$8, _23$$8, classs, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 128 TSRMLS_CC);
-			ZEPHIR_CALL_FUNCTION(&_25$$8, "array_values", NULL, 6, _24$$8);
+			ZEPHIR_CALL_FUNCTION(&_25$$8, "array_values", NULL, 9, _24$$8);
 			zephir_check_call_status();
 			zephir_update_static_property_array_multi_ce(yii_base_event_ce, SL("_events"), &_25$$8 TSRMLS_CC, SL("zz"), 2, name, classs);
 		}
@@ -294,10 +305,10 @@ PHP_METHOD(yii_base_Event, hasHandlers) {
 
 	HashTable *_10;
 	HashPosition _9;
-	zend_bool _1;
+	zend_bool _1, _14$$6;
 	int ZEPHIR_LAST_CALL_STATUS;
 	zval *name = NULL;
-	zval *classs = NULL, *name_param = NULL, *classes = NULL, *tmpArray9613f42f8264d80e17bfc80cc7a471fb = NULL, *_0, *_2, *_3, *_7 = NULL, *_8 = NULL, **_11, *_4$$4, *_5$$5, _6$$5, *_12$$6, *_13$$6, *_14$$6 = NULL;
+	zval *classs = NULL, *name_param = NULL, *classes = NULL, *tmpArray9613f42f8264d80e17bfc80cc7a471fb = NULL, *_0, *_2, *_3, *_7 = NULL, *_8 = NULL, **_11, *_4$$4, *_5$$5, _6$$5, *_12$$6, *_13$$6, *_15$$6, *_16$$6, *_17$$6 = NULL;
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 2, 0, &classs, &name_param);
@@ -331,11 +342,11 @@ PHP_METHOD(yii_base_Event, hasHandlers) {
 	ZEPHIR_INIT_VAR(tmpArray9613f42f8264d80e17bfc80cc7a471fb);
 	zephir_create_array(tmpArray9613f42f8264d80e17bfc80cc7a471fb, 1, 0 TSRMLS_CC);
 	zephir_array_fast_append(tmpArray9613f42f8264d80e17bfc80cc7a471fb, classs);
-	ZEPHIR_CALL_FUNCTION(&_7, "class_parents", NULL, 7, classs, ZEPHIR_GLOBAL(global_true));
+	ZEPHIR_CALL_FUNCTION(&_7, "class_parents", NULL, 13, classs, ZEPHIR_GLOBAL(global_true));
 	zephir_check_call_status();
-	ZEPHIR_CALL_FUNCTION(&_8, "class_implements", NULL, 8, classs, ZEPHIR_GLOBAL(global_true));
+	ZEPHIR_CALL_FUNCTION(&_8, "class_implements", NULL, 14, classs, ZEPHIR_GLOBAL(global_true));
 	zephir_check_call_status();
-	ZEPHIR_CALL_FUNCTION(&classes, "array_merge", NULL, 9, tmpArray9613f42f8264d80e17bfc80cc7a471fb, _7, _8);
+	ZEPHIR_CALL_FUNCTION(&classes, "array_merge", NULL, 15, tmpArray9613f42f8264d80e17bfc80cc7a471fb, _7, _8);
 	zephir_check_call_status();
 	zephir_is_iterable(classes, &_10, &_9, 0, 0, "yii/base/Event.zep", 172);
 	for (
@@ -344,10 +355,16 @@ PHP_METHOD(yii_base_Event, hasHandlers) {
 	) {
 		ZEPHIR_GET_HVALUE(classs, _11);
 		_12$$6 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
-		zephir_array_fetch(&_13$$6, _12$$6, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 168 TSRMLS_CC);
-		ZEPHIR_OBS_NVAR(_14$$6);
-		zephir_array_fetch(&_14$$6, _13$$6, classs, PH_NOISY, "yii/base/Event.zep", 168 TSRMLS_CC);
-		if (!(ZEPHIR_IS_EMPTY(_14$$6))) {
+		zephir_array_fetch(&_13$$6, _12$$6, name, PH_READONLY, "yii/base/Event.zep", 168 TSRMLS_CC);
+		_14$$6 = zephir_array_isset(_13$$6, classs);
+		if (_14$$6) {
+			_15$$6 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
+			zephir_array_fetch(&_16$$6, _15$$6, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 168 TSRMLS_CC);
+			ZEPHIR_OBS_NVAR(_17$$6);
+			zephir_array_fetch(&_17$$6, _16$$6, classs, PH_NOISY, "yii/base/Event.zep", 168 TSRMLS_CC);
+			_14$$6 = !(ZEPHIR_IS_EMPTY(_17$$6));
+		}
+		if (_14$$6) {
 			RETURN_MM_BOOL(1);
 		}
 	}
@@ -365,13 +382,13 @@ PHP_METHOD(yii_base_Event, hasHandlers) {
  */
 PHP_METHOD(yii_base_Event, trigger) {
 
-	HashTable *_11, *_20$$9;
-	HashPosition _10, _19$$9;
-	zend_bool _1;
-	zephir_fcall_cache_entry *_24 = NULL;
+	HashTable *_11, *_23$$9;
+	HashPosition _10, _22$$9;
+	zend_bool _1, _15$$8;
+	zephir_fcall_cache_entry *_27 = NULL;
 	int ZEPHIR_LAST_CALL_STATUS;
 	zval *name = NULL;
-	zval *classs = NULL, *name_param = NULL, *event = NULL, *classes = NULL, *tmpArray94fd3581f8118e54e2778c97fdb99a2e = NULL, *handler = NULL, *_0, *_2, *_3, *_8 = NULL, *_9 = NULL, **_12, *_4$$5, *_5$$5, *_6$$7, _7$$7, *_13$$8, *_14$$8, *_15$$8 = NULL, *_16$$9, *_17$$9, *_18$$9, **_21$$9, *_22$$10, *_23$$10, *_25$$10;
+	zval *classs = NULL, *name_param = NULL, *event = NULL, *classes = NULL, *tmpArray94fd3581f8118e54e2778c97fdb99a2e = NULL, *handler = NULL, *_0, *_2, *_3, *_8 = NULL, *_9 = NULL, **_12, *_4$$5, *_5$$5, *_6$$7, _7$$7, *_13$$8, *_14$$8, *_16$$8, *_17$$8, *_18$$8 = NULL, *_19$$9, *_20$$9, *_21$$9, **_24$$9, *_25$$10, *_26$$10, *_28$$10;
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 2, 1, &classs, &name_param, &event);
@@ -426,11 +443,11 @@ PHP_METHOD(yii_base_Event, trigger) {
 	ZEPHIR_INIT_VAR(tmpArray94fd3581f8118e54e2778c97fdb99a2e);
 	zephir_create_array(tmpArray94fd3581f8118e54e2778c97fdb99a2e, 1, 0 TSRMLS_CC);
 	zephir_array_fast_append(tmpArray94fd3581f8118e54e2778c97fdb99a2e, classs);
-	ZEPHIR_CALL_FUNCTION(&_8, "class_parents", NULL, 7, classs, ZEPHIR_GLOBAL(global_true));
+	ZEPHIR_CALL_FUNCTION(&_8, "class_parents", NULL, 13, classs, ZEPHIR_GLOBAL(global_true));
 	zephir_check_call_status();
-	ZEPHIR_CALL_FUNCTION(&_9, "class_implements", NULL, 8, classs, ZEPHIR_GLOBAL(global_true));
+	ZEPHIR_CALL_FUNCTION(&_9, "class_implements", NULL, 14, classs, ZEPHIR_GLOBAL(global_true));
 	zephir_check_call_status();
-	ZEPHIR_CALL_FUNCTION(&classes, "array_merge", NULL, 9, tmpArray94fd3581f8118e54e2778c97fdb99a2e, _8, _9);
+	ZEPHIR_CALL_FUNCTION(&classes, "array_merge", NULL, 15, tmpArray94fd3581f8118e54e2778c97fdb99a2e, _8, _9);
 	zephir_check_call_status();
 	zephir_is_iterable(classes, &_11, &_10, 0, 0, "yii/base/Event.zep", 216);
 	for (
@@ -439,26 +456,32 @@ PHP_METHOD(yii_base_Event, trigger) {
 	) {
 		ZEPHIR_GET_HVALUE(classs, _12);
 		_13$$8 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
-		zephir_array_fetch(&_14$$8, _13$$8, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 206 TSRMLS_CC);
-		ZEPHIR_OBS_NVAR(_15$$8);
-		zephir_array_fetch(&_15$$8, _14$$8, classs, PH_NOISY, "yii/base/Event.zep", 206 TSRMLS_CC);
-		if (!(ZEPHIR_IS_EMPTY(_15$$8))) {
-			_16$$9 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
-			zephir_array_fetch(&_17$$9, _16$$9, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 207 TSRMLS_CC);
-			zephir_array_fetch(&_18$$9, _17$$9, classs, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 207 TSRMLS_CC);
-			zephir_is_iterable(_18$$9, &_20$$9, &_19$$9, 0, 0, "yii/base/Event.zep", 214);
+		zephir_array_fetch(&_14$$8, _13$$8, name, PH_READONLY, "yii/base/Event.zep", 206 TSRMLS_CC);
+		_15$$8 = zephir_array_isset(_14$$8, classs);
+		if (_15$$8) {
+			_16$$8 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
+			zephir_array_fetch(&_17$$8, _16$$8, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 206 TSRMLS_CC);
+			ZEPHIR_OBS_NVAR(_18$$8);
+			zephir_array_fetch(&_18$$8, _17$$8, classs, PH_NOISY, "yii/base/Event.zep", 206 TSRMLS_CC);
+			_15$$8 = !(ZEPHIR_IS_EMPTY(_18$$8));
+		}
+		if (_15$$8) {
+			_19$$9 = zephir_fetch_static_property_ce(yii_base_event_ce, SL("_events") TSRMLS_CC);
+			zephir_array_fetch(&_20$$9, _19$$9, name, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 207 TSRMLS_CC);
+			zephir_array_fetch(&_21$$9, _20$$9, classs, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 207 TSRMLS_CC);
+			zephir_is_iterable(_21$$9, &_23$$9, &_22$$9, 0, 0, "yii/base/Event.zep", 214);
 			for (
-			  ; zephir_hash_get_current_data_ex(_20$$9, (void**) &_21$$9, &_19$$9) == SUCCESS
-			  ; zephir_hash_move_forward_ex(_20$$9, &_19$$9)
+			  ; zephir_hash_get_current_data_ex(_23$$9, (void**) &_24$$9, &_22$$9) == SUCCESS
+			  ; zephir_hash_move_forward_ex(_23$$9, &_22$$9)
 			) {
-				ZEPHIR_GET_HVALUE(handler, _21$$9);
-				zephir_array_fetch_long(&_22$$10, handler, 1, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 208 TSRMLS_CC);
-				zephir_update_property_zval(event, SL("data"), _22$$10 TSRMLS_CC);
-				zephir_array_fetch_long(&_23$$10, handler, 0, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 209 TSRMLS_CC);
-				ZEPHIR_CALL_FUNCTION(NULL, "call_user_func", &_24, 11, _23$$10, event);
+				ZEPHIR_GET_HVALUE(handler, _24$$9);
+				zephir_array_fetch_long(&_25$$10, handler, 1, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 208 TSRMLS_CC);
+				zephir_update_property_zval(event, SL("data"), _25$$10 TSRMLS_CC);
+				zephir_array_fetch_long(&_26$$10, handler, 0, PH_NOISY | PH_READONLY, "yii/base/Event.zep", 209 TSRMLS_CC);
+				ZEPHIR_CALL_FUNCTION(NULL, "call_user_func", &_27, 11, _26$$10, event);
 				zephir_check_call_status();
-				_25$$10 = zephir_fetch_nproperty_this(event, SL("handled"), PH_NOISY_CC);
-				if (zephir_is_true(_25$$10)) {
+				_28$$10 = zephir_fetch_nproperty_this(event, SL("handled"), PH_NOISY_CC);
+				if (zephir_is_true(_28$$10)) {
 					RETURN_MM_NULL();
 				}
 			}

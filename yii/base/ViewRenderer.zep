@@ -3,7 +3,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -25,5 +24,6 @@ abstract class ViewRenderer extends Component
      * @param array $params the parameters to be passed to the view file.
      * @return string the rendering result
      */
-    abstract public function render(view, string file, params);
+    public abstract function render(<View> view, string file, array params) -> string;
+
 }

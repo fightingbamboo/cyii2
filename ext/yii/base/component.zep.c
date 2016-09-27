@@ -257,13 +257,13 @@ PHP_METHOD(yii_base_Component, __set) {
 	ZVAL_STRING(&_1, "on ", 0);
 	ZEPHIR_SINIT_VAR(_2);
 	ZVAL_LONG(&_2, 3);
-	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", NULL, 12, name, &_1, &_2);
+	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", NULL, 5, name, &_1, &_2);
 	zephir_check_call_status();
 	ZEPHIR_SINIT_NVAR(_1);
 	ZVAL_STRING(&_1, "as ", 0);
 	ZEPHIR_SINIT_NVAR(_2);
 	ZVAL_LONG(&_2, 3);
-	ZEPHIR_CALL_FUNCTION(&_4, "strncmp", NULL, 12, name, &_1, &_2);
+	ZEPHIR_CALL_FUNCTION(&_4, "strncmp", NULL, 5, name, &_1, &_2);
 	zephir_check_call_status();
 	if ((zephir_method_exists(this_ptr, setter TSRMLS_CC)  == SUCCESS)) {
 		ZEPHIR_CALL_METHOD_ZVAL(NULL, this_ptr, setter, NULL, 0, value);
@@ -290,7 +290,7 @@ PHP_METHOD(yii_base_Component, __set) {
 		if (zephir_is_instance_of(value, SL("yii\\base\\Behavior") TSRMLS_CC)) {
 			ZEPHIR_CPY_WRT(_10$$5, value);
 		} else {
-			ZEPHIR_CALL_CE_STATIC(&_10$$5, yii_baseyii_ce, "createobject", &_11, 13, value);
+			ZEPHIR_CALL_CE_STATIC(&_10$$5, yii_baseyii_ce, "createobject", &_11, 6, value);
 			zephir_check_call_status();
 		}
 		ZEPHIR_CALL_METHOD(NULL, this_ptr, "attachbehavior", NULL, 0, name, _10$$5);
@@ -904,7 +904,7 @@ PHP_METHOD(yii_base_Component, hasEventHandlers) {
 	}
 	_4 = _1;
 	if (!(_4)) {
-		ZEPHIR_CALL_CE_STATIC(&_5, yii_base_event_ce, "hashandlers", &_6, 14, this_ptr, name);
+		ZEPHIR_CALL_CE_STATIC(&_5, yii_base_event_ce, "hashandlers", &_6, 7, this_ptr, name);
 		zephir_check_call_status();
 		_4 = zephir_is_true(_5);
 	}
@@ -992,7 +992,7 @@ PHP_METHOD(yii_base_Component, on) {
 		_6$$4 = zephir_fetch_nproperty_this(this_ptr, SL("_events"), PH_NOISY_CC);
 		zephir_array_fetch(&_7$$4, _6$$4, name, PH_NOISY | PH_READONLY, "yii/base/Component.zep", 493 TSRMLS_CC);
 		ZEPHIR_MAKE_REF(_7$$4);
-		ZEPHIR_CALL_FUNCTION(NULL, "array_unshift", NULL, 5, _7$$4, handlerData);
+		ZEPHIR_CALL_FUNCTION(NULL, "array_unshift", NULL, 8, _7$$4, handlerData);
 		ZEPHIR_UNREF(_7$$4);
 		zephir_check_call_status();
 	}
@@ -1066,7 +1066,7 @@ PHP_METHOD(yii_base_Component, off) {
 		if (removed) {
 			_13$$8 = zephir_fetch_nproperty_this(this_ptr, SL("_events"), PH_NOISY_CC);
 			zephir_array_fetch(&_14$$8, _13$$8, name, PH_NOISY | PH_READONLY, "yii/base/Component.zep", 528 TSRMLS_CC);
-			ZEPHIR_CALL_FUNCTION(&_15$$8, "array_values", NULL, 6, _14$$8);
+			ZEPHIR_CALL_FUNCTION(&_15$$8, "array_values", NULL, 9, _14$$8);
 			zephir_check_call_status();
 			zephir_update_property_array(this_ptr, SL("_events"), name, _15$$8 TSRMLS_CC);
 		}
@@ -1152,7 +1152,7 @@ PHP_METHOD(yii_base_Component, trigger) {
 			}
 		}
 	}
-	ZEPHIR_CALL_CE_STATIC(NULL, yii_base_event_ce, "trigger", &_14, 15, this_ptr, name, event);
+	ZEPHIR_CALL_CE_STATIC(NULL, yii_base_event_ce, "trigger", &_14, 12, this_ptr, name, event);
 	zephir_check_call_status();
 	ZEPHIR_MM_RESTORE();
 
@@ -1400,7 +1400,7 @@ PHP_METHOD(yii_base_Component, attachBehaviorInternal) {
 
 
 	if (!(zephir_is_instance_of(behavior, SL("yii\\base\\Behavior") TSRMLS_CC))) {
-		ZEPHIR_CALL_CE_STATIC(&_0$$3, yii_baseyii_ce, "createobject", &_1, 13, behavior);
+		ZEPHIR_CALL_CE_STATIC(&_0$$3, yii_baseyii_ce, "createobject", &_1, 6, behavior);
 		zephir_check_call_status();
 		ZEPHIR_CPY_WRT(behavior, _0$$3);
 	}

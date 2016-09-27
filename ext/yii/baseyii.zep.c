@@ -147,7 +147,7 @@ PHP_METHOD(yii_BaseYii, getAlias) {
 	ZVAL_STRING(&_1, "@", 0);
 	ZEPHIR_SINIT_VAR(_2);
 	ZVAL_LONG(&_2, 1);
-	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", NULL, 12, alias, &_1, &_2);
+	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", NULL, 5, alias, &_1, &_2);
 	zephir_check_call_status();
 	if (zephir_is_true(_3)) {
 		RETURN_CTOR(alias);
@@ -344,7 +344,7 @@ PHP_METHOD(yii_BaseYii, setAlias) {
 	ZVAL_STRING(&_1, "@", 0);
 	ZEPHIR_SINIT_VAR(_2);
 	ZVAL_LONG(&_2, 1);
-	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", &_4, 12, alias, &_1, &_2);
+	ZEPHIR_CALL_FUNCTION(&_3, "strncmp", &_4, 5, alias, &_1, &_2);
 	zephir_check_call_status();
 	if (zephir_is_true(_3)) {
 		ZEPHIR_INIT_VAR(_5$$4);
@@ -368,7 +368,7 @@ PHP_METHOD(yii_BaseYii, setAlias) {
 		ZVAL_STRING(&_7$$7, "@", 0);
 		ZEPHIR_SINIT_VAR(_8$$7);
 		ZVAL_LONG(&_8$$7, 1);
-		ZEPHIR_CALL_FUNCTION(&_9$$7, "strncmp", &_4, 12, path, &_7$$7, &_8$$7);
+		ZEPHIR_CALL_FUNCTION(&_9$$7, "strncmp", &_4, 5, path, &_7$$7, &_8$$7);
 		zephir_check_call_status();
 		if (zephir_is_true(_9$$7)) {
 			ZEPHIR_SINIT_VAR(_10$$8);

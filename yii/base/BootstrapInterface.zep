@@ -3,7 +3,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -11,10 +10,10 @@ namespace yii\base;
  *
  * The main method [[bootstrap()]] will be invoked by an application at the beginning of its `init()` method.
  *
- * Bootstrap classes can be registered in two approaches.
+ * Bootstrapping classes can be registered in two approaches.
  *
  * The first approach is mainly used by extensions and is managed by the Composer installation process.
- * You mainly need to list the bootstrap class of your extension in the `composer.json` file like following,
+ * You mainly need to list the bootstrapping class of your extension in the `composer.json` file like following,
  *
  * ```json
  * {
@@ -44,7 +43,7 @@ namespace yii\base;
  * ];
  * ```
  *
- * As you can see, you can register a bootstrap class in terms of either a class name or a configuration class.
+ * As you can see, you can register a bootstrapping class in terms of either a class name or a configuration class.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
@@ -56,4 +55,5 @@ interface BootstrapInterface
      * @param Application $app the application currently running
      */
     public function bootstrap(app);
+
 }
