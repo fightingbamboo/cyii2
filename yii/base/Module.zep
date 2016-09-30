@@ -3,12 +3,10 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use yii\BaseYii;
 use yii\di\ServiceLocator;
-
 /**
  * Module is the base class for module and application classes.
  *
@@ -21,7 +19,7 @@ use yii\di\ServiceLocator;
  * accessible within the module.
  *
  * @property array $aliases List of path aliases to be defined. The array keys are alias names (must start
- * with '@') and the array values are the corresponding paths or aliases. See [[setAliases()]] for an example.
+ * with `@`) and the array values are the corresponding paths or aliases. See [[setAliases()]] for an example.
  * This property is write-only.
  * @property string $basePath The root directory of the module.
  * @property string $controllerPath The directory that contains the controller classes. This property is
@@ -29,7 +27,7 @@ use yii\di\ServiceLocator;
  * @property string $layoutPath The root directory of layout files. Defaults to "[[viewPath]]/layouts".
  * @property array $modules The modules (indexed by their IDs).
  * @property string $uniqueId The unique ID of the module. This property is read-only.
- * @property string $viewPath The root directory of view files. Defaults to "[[basePath]]/view".
+ * @property string $viewPath The root directory of view files. Defaults to "[[basePath]]/views".
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
@@ -38,30 +36,29 @@ class Module extends ServiceLocator
 {
     /**
      * @event ActionEvent an event raised before executing a controller action.
-     * You may set [[ActionEvent::isValid]] to be false to cancel the action execution.
+     * You may set [[ActionEvent::isValid]] to be `false` to cancel the action execution.
      */
     const EVENT_BEFORE_ACTION = "beforeAction";
     /**
      * @event ActionEvent an event raised after executing a controller action.
      */
     const EVENT_AFTER_ACTION = "afterAction";
-
     /**
      * @var array custom module parameters (name => value).
      */
-    public params;
+    public params = [];
     /**
      * @var string an ID that uniquely identifies this module among other modules which have the same [[module|parent]].
      */
     public id;
     /**
-     * @var Module the parent module of this module. Null if this module does not have a parent.
+     * @var Module the parent module of this module. `null` if this module does not have a parent.
      */
     public module;
     /**
      * @var string|boolean the layout that should be applied for views within this module. This refers to a view name
      * relative to [[layoutPath]]. If this is not set, it means the layout value of the [[module|parent module]]
-     * will be taken. If this is false, layout will be disabled within this module.
+     * will be taken. If this is `false`, layout will be disabled within this module.
      */
     public layout;
     /**
@@ -69,11 +66,11 @@ class Module extends ServiceLocator
      * Each name-value pair specifies the configuration of a single controller.
      * A controller configuration can be either a string or an array.
      * If the former, the string should be the fully qualified class name of the controller.
-     * If the latter, the array must contain a 'class' element which specifies
+     * If the latter, the array must contain a `class` element which specifies
      * the controller's fully qualified class name, and the rest of the name-value pairs
      * in the array are used to initialize the corresponding controller properties. For example,
      *
-     * ~~~
+     * ```php
      * [
      *   'account' => 'app\controllers\UserController',
      *   'article' => [
@@ -81,18 +78,24 @@ class Module extends ServiceLocator
      *      'pageTitle' => 'something new',
      *   ],
      * ]
-     * ~~~
+     * ```
      */
-    public controllerMap;
+    public controllerMap = [];
     /**
-     * @var string the namespace that controller classes are in. If not set,
-     * it will use the "controllers" sub-namespace under the namespace of this module.
-     * For example, if the namespace of this module is "foo\bar", then the default
-     * controller namespace would be "foo\bar\controllers".
+     * @var string the namespace that controller classes are in.
+     * This namespace will be used to load controller classes by prepending it to the controller
+     * class name.
+     *
+     * If not set, it will use the `controllers` sub-namespace under the namespace of this module.
+     * For example, if the namespace of this module is `foo\bar`, then the default
+     * controller namespace would be `foo\bar\controllers`.
+     *
+     * See also the [guide section on autoloading](guide:concept-autoloading) to learn more about
+     * defining namespaces and how classes are loaded.
      */
     public controllerNamespace;
     /**
-     * @var string the default route of this module. Defaults to 'default'.
+     * @var string the default route of this module. Defaults to `default`.
      * The route may consist of child module ID, controller ID, and/or action ID.
      * For example, `help`, `post/create`, `admin/post/create`.
      * If action ID is not given, it will take the default value as specified in
@@ -114,21 +117,17 @@ class Module extends ServiceLocator
     /**
      * @var array child modules of this module
      */
-    protected _modules;
-
-
+    protected _modules = [];
     /**
      * Constructor.
-     * @param string $id the ID of this module
-     * @param Module $parent the parent module (if any)
-     * @param array $config name-value pairs that will be used to initialize the object properties
+     * @param string $id the ID of this module.
+     * @param Module $parent the parent module (if any).
+     * @param array $config name-value pairs that will be used to initialize the object properties.
      */
-    public function __construct(string id, parent = null, config = [])
+    public function __construct(string id, <Module> parent = null, array config = []) -> void
     {
         let this->id = id;
-
         let this->module = parent;
-
         parent::__construct(config);
     }
 
@@ -140,14 +139,10 @@ class Module extends ServiceLocator
      */
     public static function getInstance()
     {
-        var get_class;
-        let get_class = get_called_class();
-        if isset BaseYii::$app->loadedModules[get_class] {
-            return BaseYii::$app->loadedModules[get_class];
-        } else {
-            return null;
-        }
-        //return (isset app->loadedModules[get_class]) ? app->loadedModules[get_class] : null;
+        var classs;
+
+        let classs =  get_called_class();
+        return  isset BaseYii::app->loadedModules[classs] ? BaseYii::app->loadedModules[classs]  : null;
     }
 
     /**
@@ -155,12 +150,13 @@ class Module extends ServiceLocator
      * @param Module|null $instance the currently requested instance of this module class.
      * If it is `null`, the instance of the calling class will be removed, if any.
      */
-    public static function setInstance(instance)
+    public static function setInstance(instance) -> void
     {
         if instance === null {
-            unset(BaseYii::$app->loadedModules[get_called_class()]);
+            unset BaseYii::app->loadedModules[get_called_class()];
+
         } else {
-            BaseYii::$app->loadedModules[get_class(instance)] = instance;
+            let BaseYii::app->loadedModules[get_class(instance)] = instance;
         }
     }
 
@@ -173,15 +169,15 @@ class Module extends ServiceLocator
      *
      * If you override this method, please make sure you call the parent implementation.
      */
-    public function init()
+    public function init() -> void
     {
-        var $class, pos;
-        if typeof this->controllerNamespace == "null" {
-            let $class = get_class(this),
-                pos = strrpos($class, "\\");
+        var classs, pos;
 
-            if typeof pos != "boolean" {
-                let this->controllerNamespace = substr($class, 0, pos) . "\\controllers";
+        if this->controllerNamespace === null {
+            let classs =  get_class(this);
+            let pos =  strrpos(classs, "\\");
+            if pos !== false {
+                let this->controllerNamespace =  substr(classs, 0, pos) . "\\controllers";
             }
         }
     }
@@ -191,22 +187,9 @@ class Module extends ServiceLocator
      * Note that if the module is an application, an empty string will be returned.
      * @return string the unique ID of the module.
      */
-    public function getUniqueId()
+    public function getUniqueId() -> string
     {
-        var id, module, this_id, temp_id, unique_id, slash;
-        let module = this->module,
-            this_id = this->id,
-            slash = "/";
-
-        if typeof this->module != "null" {
-            let unique_id = module->getUniqueId(),
-                temp_id = unique_id . slash . this->id,
-                id = ltrim(temp_id, slash);
-            return id;
-        }
-        else {
-            return this_id;
-        }
+        return  this->module ? ltrim(this->module->getUniqueId() . "/" . this->id, "/")  : this->id;
     }
 
     /**
@@ -214,17 +197,14 @@ class Module extends ServiceLocator
      * It defaults to the directory containing the module class file.
      * @return string the root directory of the module.
      */
-    public function getBasePath()
+    public function getBasePath() -> string
     {
-        var $class, name;
-        if typeof this->_basePath == "null" {
-            let $class = new \ReflectionClass(this),
-                let name = $class->getFileName(),
-                let name = dirname(name);
+        var classs;
 
-            let this->_basePath = name;
+        if this->_basePath === null {
+            let classs =  new \ReflectionClass(this);
+            let this->_basePath =  dirname(classs->getFileName());
         }
-
         return this->_basePath;
     }
 
@@ -234,16 +214,16 @@ class Module extends ServiceLocator
      * @param string $path the root directory of the module. This can be either a directory name or a path alias.
      * @throws InvalidParamException if the directory does not exist.
      */
-    public function setBasePath(string path)
+    public function setBasePath(string path) -> void
     {
         var p;
-        let path = BaseYii::getAlias(path),
-            p = realpath(path);
 
-        if typeof p != "boolean" && is_dir(p) {
+        let path =  BaseYii::getAlias(path);
+        let p =  strncmp(path, "phar://", 7) === 0 ? path  : realpath(path);
+        if p !== false && is_dir(p) {
             let this->_basePath = p;
         } else {
-            throw new InvalidParamException("The directory does not exist: " . path);
+            throw new InvalidParamException("The directory does not exist: {path}");
         }
     }
 
@@ -254,94 +234,78 @@ class Module extends ServiceLocator
      * @return string the directory that contains the controller classes.
      * @throws InvalidParamException if there is no alias defined for the root namespace of [[controllerNamespace]].
      */
-    public function getControllerPath()
+    public function getControllerPath() -> string
     {
-        var path;
-        let path = this->controllerNamespace;
-        let path = str_replace("\\", "/", path);
-        let path = "@" . path;
-
-        return BaseYii::getAlias(path);
+        return BaseYii::getAlias("@" . str_replace("\\", "/", this->controllerNamespace));
     }
 
     /**
      * Returns the directory that contains the view files for this module.
-     * @return string the root directory of view files. Defaults to "[[basePath]]/view".
+     * @return string the root directory of view files. Defaults to "[[basePath]]/views".
      */
-    public function getViewPath()
+    public function getViewPath() -> string
     {
-        var view_path;
-        if typeof this->_viewPath != "null" {
-            return this->_viewPath;
-        } else {
-            let view_path = this->getBasePath();
-            let view_path = view_path . DIRECTORY_SEPARATOR . "views";
-            let this->_viewPath = view_path;
-            return view_path;
+        if this->_viewPath === null {
+            let this->_viewPath =  this->getBasePath() . DIRECTORY_SEPARATOR . "views";
         }
+        return this->_viewPath;
     }
 
     /**
      * Sets the directory that contains the view files.
      * @param string $path the root directory of view files.
-     * @throws InvalidParamException if the directory is invalid
+     * @throws InvalidParamException if the directory is invalid.
      */
-    public function setViewPath(string path)
+    public function setViewPath(string path) -> void
     {
-        let this->_viewPath = BaseYii::getAlias(path);
+        let this->_viewPath =  BaseYii::getAlias(path);
     }
 
     /**
      * Returns the directory that contains layout view files for this module.
      * @return string the root directory of layout files. Defaults to "[[viewPath]]/layouts".
      */
-    public function getLayoutPath()
+    public function getLayoutPath() -> string
     {
-        var layout_path;
-        if typeof this->_layoutPath != "null" {
-            return this->_layoutPath;
-        } else {
-            let layout_path = this->getViewPath(),
-                layout_path .= DIRECTORY_SEPARATOR . "layouts",
-                this->_layoutPath = layout_path;
-            return layout_path;
-       }
+        if this->_layoutPath === null {
+            let this->_layoutPath =  this->getViewPath() . DIRECTORY_SEPARATOR . "layouts";
+        }
+        return this->_layoutPath;
     }
 
     /**
      * Sets the directory that contains the layout files.
-     * @param string $path the root directory of layout files.
+     * @param string $path the root directory or path alias of layout files.
      * @throws InvalidParamException if the directory is invalid
      */
-    public function setLayoutPath(string path)
+    public function setLayoutPath(string path) -> void
     {
-        let this->_layoutPath = BaseYii::getAlias(path);
+        let this->_layoutPath =  BaseYii::getAlias(path);
     }
 
     /**
      * Defines path aliases.
-     * This method calls [[Yii::setAlias()]] to register the path aliases.
+     * This method calls [[BaseYii::setAlias()]] to register the path aliases.
      * This method is provided so that you can define path aliases when configuring a module.
      * @property array list of path aliases to be defined. The array keys are alias names
-     * (must start with '@') and the array values are the corresponding paths or aliases.
+     * (must start with `@`) and the array values are the corresponding paths or aliases.
      * See [[setAliases()]] for an example.
      * @param array $aliases list of path aliases to be defined. The array keys are alias names
-     * (must start with '@') and the array values are the corresponding paths or aliases.
+     * (must start with `@`) and the array values are the corresponding paths or aliases.
      * For example,
      *
-     * ~~~
+     * ```php
      * [
      *     '@models' => '@app/models', // an existing alias
      *     '@backend' => __DIR__ . '/../backend',  // a directory
      * ]
-     * ~~~
+     * ```
      */
-    public function setAliases(aliases)
+    public function setAliases(array aliases) -> void
     {
-        var temp_aliases, alias, name;
-        let temp_aliases = aliases;
+        var name, alias;
 
-        for name, alias in temp_aliases {
+        for name, alias in aliases {
             BaseYii::setAlias(name, alias);
         }
     }
@@ -353,32 +317,17 @@ class Module extends ServiceLocator
      * @return boolean whether the named module exists. Both loaded and unloaded modules
      * are considered.
      */
-    public function hasModule(string id)
+    public function hasModule(string id) -> boolean
     {
-        var pos, sub_id, sub_id2, module, retval;
-        let pos = strpos(id, "/");
-        if typeof pos != "boolean" {
-            // sub-module
-            let sub_id = substr(id, 0, pos);
-            let module = this->getModule(sub_id);
-            if typeof module == "null" {
-                return false;
-            }
-            else {
-                let sub_id2 = substr(id, pos + 1);
-                let retval = module->hasModule(sub_id2);
-                return retval;
-            }
-        } else {
-            var temp_module;
-            let temp_module = this->_modules;
+        var pos, module;
 
-            if isset temp_module[id] {
-                return true;
-            }
-            else {
-                return false;
-            }
+        let pos =  strpos(id, "/");
+        if pos !== false {
+            // sub-module
+            let module =  this->getModule(substr(id, 0, pos));
+            return  module === null ? false  : module->hasModule(substr(id, pos + 1));
+        } else {
+            return isset this->_modules[id];
         }
     }
 
@@ -388,107 +337,76 @@ class Module extends ServiceLocator
      * @param string $id module ID (case-sensitive). To retrieve grand child modules,
      * use ID path relative to this module (e.g. `admin/content`).
      * @param boolean $load whether to load the module if it is not yet loaded.
-     * @return Module|null the module instance, null if the module does not exist.
+     * @return Module|null the module instance, `null` if the module does not exist.
      * @see hasModule()
      */
-    public function getModule(string id, load = true)
+    public function getModule(string id, boolean load = true)
     {
-        var pos, sub_id, sub_id2, module, retval, modules, mo;
-        let pos = strpos(id, "/");
-        if typeof pos != "boolean" {
+        var pos, module, tmpArray2182bb4b9bc3e7ea15b64a5e39f8889e;
+
+        let pos =  strpos(id, "/");
+        if pos !== false {
             // sub-module
-            let sub_id = substr(id, 0, pos);
-            let module = this->getModule(id);
-
-            if typeof module == "null" {
-                return null;
-            }
-            else {
-                let sub_id2 = substr(id, pos + 1);
-                let retval = module->getModule(sub_id2, load);
-                return retval;
+            let module =  this->getModule(substr(id, 0, pos));
+            return  module === null ? null  : module->getModule(substr(id, pos + 1), load);
+        }
+        if isset this->_modules[id] {
+            if this->_modules[id] instanceof Module {
+                return this->_modules[id];
+            } elseif load {
+                BaseYii::trace("Loading module: {id}", __METHOD__);
+                /* @var $module Module */
+                let module =  BaseYii::createObject(this->_modules[id], [id, this]);
+                module->setInstance(module);
+                let this->_modules[id] = module;
+                return this->_modules[id];
             }
         }
-        let modules = this->_modules;
-
-        if fetch mo, modules[id] {
-            if typeof mo == "object" {
-                if mo instanceof Module {
-                    return mo;
-                }
-            }
-            else {
-                if load == true {
-                    BaseYii::trace("Loading module: ". id, __METHOD__);
-                    if typeof mo == "array" && !isset mo["class"] {
-                        let mo["class"] = "yii\\base\\Module";
-                    }
-                    var elements = [];
-                    let elements[] = id,
-                        elements[] = this;
-
-                    let retval = BaseYii::createObject(mo, elements);
-                    let modules[id] = retval;
-                    let this->_modules = modules;
-                    return retval;
-                }
-            }
-        }
-
         return null;
     }
 
     /**
      * Adds a sub-module to this module.
-     * @param string $id module ID
+     * @param string $id module ID.
      * @param Module|array|null $module the sub-module to be added to this module. This can
-     * be one of the followings:
+     * be one of the following:
      *
      * - a [[Module]] object
      * - a configuration array: when [[getModule()]] is called initially, the array
      *   will be used to instantiate the sub-module
-     * - null: the named sub-module will be removed from this module
+     * - `null`: the named sub-module will be removed from this module
      */
-    public function setModule(string id, module)
+    public function setModule(string id, module) -> void
     {
-        var modules, temp_module;
-        let modules = this->_modules;
+        if module === null {
+            unset this->_modules[id];
 
-        if typeof module == "null" {
-            if isset modules[id] {
-                unset modules[id];
-            }
         } else {
-            let temp_module = module,
-                modules[id] = temp_module;
+            let this->_modules[id] = module;
         }
-
-        let this->_modules = modules;
     }
 
     /**
      * Returns the sub-modules in this module.
-     * @param boolean $loadedOnly whether to return the loaded sub-modules only. If this is set false,
+     * @param boolean $loadedOnly whether to return the loaded sub-modules only. If this is set `false`,
      * then all sub-modules registered in this module will be returned, whether they are loaded or not.
      * Loaded modules will be returned as objects, while unloaded modules as configuration arrays.
-     * @return array the modules (indexed by their IDs)
+     * @return array the modules (indexed by their IDs).
      */
-    public function getModules(boolean loadedOnly = false)
+    public function getModules(boolean loadedOnly = false) -> array
     {
-        var new_modules, modules, module;
-        let modules = this->_modules;
+        var modules, module;
 
         if loadedOnly {
-            let new_modules = [];
-            for module in modules {
+            let modules =  [];
+            for module in this->_modules {
                 if module instanceof Module {
-                    let new_modules[] = module;
+                    let modules[] = module;
                 }
             }
-
-            return new_modules;
-        } else {
             return modules;
+        } else {
+            return this->_modules;
         }
     }
 
@@ -497,14 +415,14 @@ class Module extends ServiceLocator
      *
      * Each sub-module should be specified as a name-value pair, where
      * name refers to the ID of the module and value the module or a configuration
-     * array that can be used to create the module. In the latter case, [[Yii::createObject()]]
+     * array that can be used to create the module. In the latter case, [[BaseYii::createObject()]]
      * will be used to create the module.
      *
      * If a new sub-module has the same ID as an existing one, the existing one will be overwritten silently.
      *
      * The following is an example for registering two sub-modules:
      *
-     * ~~~
+     * ```php
      * [
      *     'comment' => [
      *         'class' => 'app\modules\comment\CommentModule',
@@ -512,24 +430,17 @@ class Module extends ServiceLocator
      *     ],
      *     'booking' => ['class' => 'app\modules\booking\BookingModule'],
      * ]
-     * ~~~
+     * ```
      *
-     * @param array $modules modules (id => module configuration or instances)
+     * @param array $modules modules (id => module configuration or instances).
      */
-    public function setModules(modules)
+    public function setModules(array modules) -> void
     {
-        var id, temp_modules, module, this_modules;
-        let this_modules = this->_modules;
-        if typeof this_modules != "array" {
-            let this_modules = [];
-        }
-        let temp_modules = modules;
+        var id, module;
 
-        for id, module in temp_modules {
-            let this_modules[id] = module;
+        for id, module in modules {
+            let this->_modules[id] = module;
         }
-
-        let this->_modules = this_modules;
     }
 
     /**
@@ -540,36 +451,26 @@ class Module extends ServiceLocator
      * @param string $route the route that specifies the action.
      * @param array $params the parameters to be passed to the action
      * @return mixed the result of the action.
-     * @throws InvalidRouteException if the requested route cannot be resolved into an action successfully
+     * @throws InvalidRouteException if the requested route cannot be resolved into an action successfully.
      */
-    public function runAction(string route, params = [])
+    public function runAction(string route, array params = [])
     {
-        var parts, id, controller, actionID, oldController, result;
-        let parts = this->createController(route);
+        var parts, controller, actionID, tmpListControllerActionID, oldController, result, id;
 
-        if typeof parts == "array" {
-            /** @var Controller $controller */
-            let controller = parts[0],
-                actionID = parts[1];
-
-            var app;
-
-            let app = BaseYii::$app,
-                oldController = app->controller,
-                app->controller = controller,
-                result = controller->runAction(actionID, params);
-            //let app->controller = oldController;
+        let parts =  this->createController(route);
+        if is_array(parts) {
+            /* @var $controller Controller */
+            let tmpListControllerActionID = parts;
+            let controller = tmpListControllerActionID[0];
+            let actionID = tmpListControllerActionID[1];
+            let oldController =  BaseYii::app->controller;
+            let BaseYii::app->controller = controller;
+            let result =  controller->runAction(actionID, params);
+            let BaseYii::app->controller = oldController;
             return result;
         } else {
-            let id = this->getUniqueId();
-            var message;
-            if id == "" {
-                let message = route;
-            }
-            else {
-                let message = id . "/" . route;
-            }
-            throw new InvalidRouteException("Unable to resolve the request \"" . message . "\".");
+            let id =  this->getUniqueId();
+            throw new InvalidRouteException("Unable to resolve the request \"" . ( id === "" ? route  : id . "/" . route) . "\".");
         }
     }
 
@@ -588,85 +489,55 @@ class Module extends ServiceLocator
      *    or `abc\def\XyzController` class within the [[controllerNamespace|controller namespace]].
      *
      * If any of the above steps resolves into a controller, it is returned together with the rest
-     * part of the route which will be treated as the action ID. Otherwise, false will be returned.
+     * part of the route which will be treated as the action ID. Otherwise, `false` will be returned.
      *
      * @param string $route the route consisting of module, controller and action IDs.
      * @return array|boolean If the controller is created successfully, it will be returned together
-     * with the requested action ID. Otherwise false will be returned.
+     * with the requested action ID. Otherwise `false` will be returned.
      * @throws InvalidConfigException if the controller class and its file do not match.
      */
-    public function createController(route)
+    public function createController(string route)
     {
-        if route == "" {
-            let route = this->defaultRoute;
+        var id, tmpListIdRoute, controller, tmpArraya4e252e464f06837f014483523b22572, tmpArray2fa2695adbaa9d272006ac7ff76d057b, module, pos;
+
+        if route === "" {
+            let route =  this->defaultRoute;
         }
-        var slash, pos;
-        let slash = "/";
         // double slashes or leading/ending slashes may cause substr problem
-        let route = trim(route, slash);
-
-        let pos = strpos(route, "//");
-
-        if typeof pos !== false {
+        let route =  trim(route, "/");
+        if strpos(route, "//") !== false {
             return false;
         }
-        var id;
-
-        let pos = strpos(route, slash);
-        if typeof pos != "boolean" {
-            var explodes;
-            let explodes = explode(slash, route, 2);
-            let id = explodes[0],
-                route = explodes[1];
+        if strpos(route, "/") !== false {
+            let tmpListIdRoute = explode("/", route, 2);
+            let id = tmpListIdRoute[0];
+            let route = tmpListIdRoute[1];
         } else {
             let id = route;
             let route = "";
         }
-
         // module and controller map take precedence
-        var module;
-        let module = this->getModule(id);
-        if typeof module != "null" {
+        if isset this->controllerMap[id] {
+            let controller =  BaseYii::createObject(this->controllerMap[id], [id, this]);
+            let tmpArray2fa2695adbaa9d272006ac7ff76d057b = [controller, route];
+            return tmpArray2fa2695adbaa9d272006ac7ff76d057b;
+        }
+        let module =  this->getModule(id);
+        if module !== null {
             return module->createController(route);
         }
-        var controller_map, controller_id, controller, return_elements = [];
-        let controller_map = this->controllerMap;
-        if fetch controller_id,  controller_map[id] {
-            var elements = [];
-            let elements[] = id,
-                elements[] = this;
-
-            let controller = BaseYii::createObject(controller_id, elements);
-            let return_elements[] = controller,
-                return_elements[] = route;
-            return return_elements;
+        let pos =  strrpos(route, "/");
+        if pos !== false {
+            let id .= "/" . substr(route, 0, pos);
+            let route =  substr(route, pos + 1);
         }
-
-        let pos = strrpos(route, slash);
-        if typeof pos != "boolean" {
-            let id = id . slash . substr(route, 0, pos);
-            let route = substr(route, pos + 1);
-        }
-
-        let controller = this->createControllerByID(id);
-
-        if typeof controller == "null" && route != "" {
-            let controller = this->createControllerByID(id . slash . route);
+        let controller =  this->createControllerByID(id);
+        if controller === null && route !== "" {
+            let controller =  this->createControllerByID(id . "/" . route);
             let route = "";
         }
-
-
-        if typeof controller == "null" {
-            return false;
-        }
-        else {
-            var temp_controller;
-            let temp_controller = controller;
-
-            let return_elements[0] = temp_controller,
-                return_elements[1] = route;
-            return return_elements;
-        }
+        let tmpArray343b564088c118ab6ac5f288ca699df8 = [controller, route];
+        return  controller === null ? false  : tmpArray343b564088c118ab6ac5f288ca699df8;
     }
 
     /**
@@ -677,58 +548,41 @@ class Module extends ServiceLocator
      *
      * Note that this method does not check [[modules]] or [[controllerMap]].
      *
-     * @param string $id the controller ID
-     * @return Controller the newly created controller instance, or null if the controller ID is invalid.
+     * @param string $id the controller ID.
+     * @return Controller the newly created controller instance, or `null` if the controller ID is invalid.
      * @throws InvalidConfigException if the controller class and its file name do not match.
      * This exception is only thrown when in debug mode.
      */
-    public function createControllerByID(id)
+    public function createControllerByID(string id) -> <Controller>
     {
-        if !preg_match("%^[a-z0-9\\-_/]+$%", id) {
-            return null;
-        }
+        var pos, prefix, className, controller, tmpArray70011ab02e24b2ff6b02e2abee966e0a;
 
-        var pos, prefix, className;
-        let pos = strrpos(id, "/");
-        if  pos === false {
+        let pos =  strrpos(id, "/");
+        if pos === false {
             let prefix = "";
             let className = id;
         } else {
-            let prefix = substr(id, 0, pos + 1);
-            let className = substr(id, pos + 1);
+            let prefix =  substr(id, 0, pos + 1);
+            let className =  substr(id, pos + 1);
         }
-        if !preg_match("%^[a-z][a-z0-9\\-_]*$%", className) {
-                    return null;
-        }
-        if prefix !== '' && !preg_match("%^[a-z0-9_/]+$%i", prefix) {
+        if !(preg_match("%^[a-z][a-z0-9\\-_]*$%", className)) {
             return null;
         }
-
-        let className = str_replace("-", " ", className),
-            className = ucwords(className),
-            className = str_replace(" ", "", className),
-            className = className . "Controller",
-            className = str_replace("/", "\\", prefix) . className,
-            className = "\\" . className,
-            className = this->controllerNamespace . className,
-            className = ltrim(className, "\\");
-
-        let pos = strpos(className, "-");
-        if typeof pos !== false || !class_exists(className) {
+        if prefix !== "" && !(preg_match("%^[a-z0-9_/]+$%i", prefix)) {
             return null;
         }
-
+        let className =  str_replace(" ", "", ucwords(str_replace("-", " ", className))) . "Controller";
+        let className =  ltrim(this->controllerNamespace . "\\" . str_replace("/", "\\", prefix) . className, "\\");
+        if strpos(className, "-") !== false || !(class_exists(className)) {
+            return null;
+        }
         if is_subclass_of(className, "yii\\base\\Controller") {
-            var elements = [];
-            let elements[] = id,
-                elements[] = this;
-            return BaseYii::createObject(className, elements);
+            let controller =  BaseYii::createObject(className, [id, this]);
+            return  get_class(controller) === className ? controller  : null;
+        } elseif YII_DEBUG {
+            throw new InvalidConfigException("Controller class must extend from \\yii\\base\\Controller.");
         } else {
-            if (YII_DEBUG) {
-                throw new InvalidConfigException("Controller class must extend from \\yii\\base\\Controller.");
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 
@@ -738,27 +592,32 @@ class Module extends ServiceLocator
      * The method will trigger the [[EVENT_BEFORE_ACTION]] event. The return value of the method
      * will determine whether the action should continue to run.
      *
+     * In case the action should not run, the request should be handled inside of the `beforeAction` code
+     * by either providing the necessary output or redirecting the request. Otherwise the response will be empty.
+     *
      * If you override this method, your code should look like the following:
      *
      * ```php
      * public function beforeAction($action)
      * {
-     *     if (parent::beforeAction($action)) {
-     *         // your custom code here
-     *         return true;  // or false if needed
-     *     } else {
+     *     if (!parent::beforeAction($action)) {
      *         return false;
      *     }
+     *
+     *     // your custom code here
+     *
+     *     return true; // or false to not run the action
      * }
      * ```
      *
      * @param Action $action the action to be executed.
      * @return boolean whether the action should continue to be executed.
      */
-    public function beforeAction(action)
+    public function beforeAction(<Action> action) -> boolean
     {
         var event;
-        let event = new ActionEvent(action);
+
+        let event =  new ActionEvent(action);
         this->trigger(self::EVENT_BEFORE_ACTION, event);
         return event->isValid;
     }
@@ -784,12 +643,14 @@ class Module extends ServiceLocator
      * @param mixed $result the action return result.
      * @return mixed the processed action result.
      */
-    public function afterAction(action, result)
+    public function afterAction(<Action> action, result)
     {
         var event;
-        let event = new ActionEvent(action);
+
+        let event =  new ActionEvent(action);
         let event->result = result;
         this->trigger(self::EVENT_AFTER_ACTION, event);
         return event->result;
     }
+
 }
