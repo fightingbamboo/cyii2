@@ -2,11 +2,12 @@
 .temp
 ext/*
 
-!ext/yii
-ext/yii/*.lo
-ext/yii/.libs/*
-ext/yii/*/*.lo
-ext/yii/*/.libs/*
+#!ext/yii
+#ext/yii/*.lo
+#ext/yii/.libs/*
+#ext/yii/*/*.lo
+#ext/yii/*/.libs/*
+
 
 vendor/*
 trait/*

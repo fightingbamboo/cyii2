@@ -5,7 +5,7 @@
  */
 namespace yii\base;
 
-use Yii;
+use yii\BaseYii;
 /**
  * Component is the base class that implements the *property*, *event* and *behavior* features.
  *
@@ -84,7 +84,7 @@ use Yii;
  * ]
  * ```
  *
- * where `as tree` stands for attaching a behavior named `tree`, and the array will be passed to [[\Yii::createObject()]]
+ * where `as tree` stands for attaching a behavior named `tree`, and the array will be passed to [[\BaseYii::createObject()]]
  * to create the behavior object.
  *
  * @property Behavior[] $behaviors List of behaviors attached to this component. This property is read-only.
@@ -174,7 +174,17 @@ class Component extends \yii\base\Object
         } elseif strncmp(name, "as ", 3) === 0 {
             // as behavior: attach behavior
             let name =  trim(substr(name, 3));
-            this->attachBehavior(name,  value instanceof Behavior ? value  : Yii::createObject(value));
+
+            var aBehavior;
+
+            if (typeof value == "object") && (value instanceof Behavior) {
+                let aBehavior = value;
+            } else {
+                var vObject = BaseYii::createObject(value);
+                let aBehavior = vObject;
+            }
+            this->attachBehavior(name,  aBehavior);
+
             return;
         } else {
             // behavior property
@@ -596,7 +606,7 @@ class Component extends \yii\base\Object
      *
      *  - a [[Behavior]] object
      *  - a string specifying the behavior class
-     *  - an object configuration array that will be passed to [[Yii::createObject()]] to create the behavior object.
+     *  - an object configuration array that will be passed to [[BaseYii::createObject()]] to create the behavior object.
      *
      * @return Behavior the behavior object
      * @see detachBehavior()
@@ -682,10 +692,10 @@ class Component extends \yii\base\Object
      * @param string|array|Behavior $behavior the behavior to be attached
      * @return Behavior the attached behavior.
      */
-    protected function attachBehaviorInternal(name, behavior) -> <Behavior>
+    protected function attachBehaviorInternal(name, behavior)
     {
-        if !(behavior instanceof Behavior) {
-            let behavior =  Yii::createObject(behavior);
+        if (typeof behavior != "object") || !(behavior instanceof Behavior) {
+            let behavior =  BaseYii::createObject(behavior);
         }
         if is_int(name) {
             behavior->attach(this);

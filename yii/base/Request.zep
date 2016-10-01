@@ -5,7 +5,7 @@
  */
 namespace yii\base;
 
-use Yii;
+use yii\BaseYii;
 /**
  * Request represents a request that is handled by an [[Application]].
  *
@@ -72,7 +72,7 @@ abstract class Request extends Component
     {
         var scriptFile;
     
-        let scriptFile =  realpath(Yii::getAlias(value));
+        let scriptFile =  realpath(BaseYii::getAlias(value));
         if scriptFile !== false && is_file(scriptFile) {
             let this->_scriptFile = scriptFile;
         } else {
