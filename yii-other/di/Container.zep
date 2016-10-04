@@ -3,7 +3,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\di;
 
 use yii\BaseYii;
@@ -23,7 +22,7 @@ use yii\base\InvalidConfigException;
  * You then call [[get()]] to create a new class object. Container will automatically instantiate
  * dependent objects, inject them into the object being created, configure and finally return the newly created object.
  *
- * By default, [[\Yii::$container]] refers to a Container instance which is used by [[\Yii::createObject()]]
+ * By default, [[\BaseYii::$container]] refers to a Container instance which is used by [[\BaseYii::createObject()]]
  * to create new object instances. You may use this method to replace the `new` operator
  * when creating a new object, which gives you the benefit of automatic dependency resolution and default
  * property configuration.
@@ -92,37 +91,38 @@ use yii\base\InvalidConfigException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Container 
-//extends Component
+class Container extends Component
 {
     /**
      * @var array singleton objects indexed by their types
      */
-    private _singletons;
+    protected _singletons = [];
     /**
      * @var array object definitions indexed by their types
      */
-    private _definitions;
+    protected _definitions = [];
     /**
      * @var array constructor parameters indexed by object types
      */
-    private _params;
+    protected _params = [];
     /**
      * @var array cached ReflectionClass objects indexed by class/interface names
      */
-    private _reflections;
+    protected _reflections = [];
     /**
      * @var array cached dependencies indexed by class/interface names. Each class name
      * is associated with a list of constructor parameter types or default values.
      */
-    private _dependencies;
-
-
+    protected _dependencies = [];
     /**
      * Returns an instance of the requested class.
      *
      * You may provide constructor parameters (`$params`) and object configurations (`$config`)
      * that will be used during the creation of the instance.
+     *
+     * If the class implements [[\yii\base\Configurable]], the `$config` parameter will be passed as the last
+     * parameter to the class constructor; Otherwise, the configuration will be applied *after* the object is
+     * instantiated.
      *
      * Note that if the class is declared to be singleton by calling [[setSingleton()]],
      * the same instance of the class will be returned each time this method is called.
@@ -137,69 +137,45 @@ class Container
      * @param array $config a list of name-value pairs that will be used to initialize the object properties.
      * @return object an instance of the requested class.
      * @throws InvalidConfigException if the class cannot be recognized or correspond to an invalid definition
+     * @throws NotInstantiableException If resolved to an abstract class or an interface (since 2.0.9)
      */
-    public function get(string $class, params = [], config = [])
+    public function get(string classs, array params = [], array config = [])
     {
-        var singletons, singleton, definitions;
-        let singletons = this->_singletons;
-        if typeof singletons != "array" {
-            let this->_singletons = [];
-        }
+        var definition, $object, concrete;
 
-        let definitions = this->_definitions;
-        if typeof definitions != "array" {
-            let this->_definitions = [];
-        }
-
-        if fetch singleton, this->_singletons[$class] {
+        if isset this->_singletons[classs] {
             // singleton
-            return singleton;
+            return this->_singletons[classs];
+        } elseif !(isset this->_definitions[classs]) {
+            return this->build(classs, params, config);
         }
-        else {
-            if !isset this->_definitions[$class] {
-                return this->build($class, params, config);
-            }
-        }
-
-        var definition, $object;
-        let definition = this->_definitions[$class];
-
+        let definition = this->_definitions[classs];
         if is_callable(definition, true) {
-            let params = this->mergeParams($class, params);
-            let params = this->resolveDependencies(params);
-            let $object = call_user_func(definition, this, params, config);
-        }
-        else {
-            if typeof definition == "array" {
-                var concrete;
-                let concrete = definition["class"];
-                unset definition["class"];
+            var mergeParams = [];
+            let mergeParams = this->mergeParams(classs, params);
+            let params =  (array)this->resolveDependencies( mergeParams );
+            let $object =  call_user_func(definition, this, params, config);
+        } elseif is_array(definition) {
+            let concrete = definition["class"];
+            unset definition["class"];
 
-                let config = array_merge(definition, config);
-                let params = this->mergeParams($class, params);
-
-                if concrete === $class {
-                    let $object = this->build($class, params, config);
-                } else {
-                    let $object = this->get(concrete, params, config);
-                }
+            let config =  array_merge(definition, config);
+            let params =  this->mergeParams(classs, params);
+            if concrete === classs {
+                let $object =  this->build(classs, params, config);
+            } else {
+                let $object =  this->get(concrete, params, config);
             }
-            else {
-
-                if typeof definition == "object" {
-                    let this->_singletons[$class] = definition;
-                    return definition;
-                } else {
-                    throw new InvalidConfigException("Unexpected object definition type: " . gettype(definition));
-                }
-            }
+        } elseif is_object(definition) {
+            let this->_singletons[classs] = definition;
+            return this->_singletons[classs];
+        } else {
+            throw new InvalidConfigException("Unexpected object definition type: " . gettype(definition));
         }
-
-        if array_key_exists($class, this->_singletons) {
+        if array_key_exists(classs, this->_singletons) {
             // singleton
-            let this->_singletons[$class] = $object;
+            let this->_singletons[classs] = $object;
         }
-
         return $object;
     }
 
@@ -251,7 +227,7 @@ class Container
      * You may use [[has()]] to check if a class definition already exists.
      *
      * @param string $class class name, interface name or alias name
-     * @param mixed $definition the definition associated with `$class`. It can be one of the followings:
+     * @param mixed $definition the definition associated with `$class`. It can be one of the following:
      *
      * - a PHP callable: The callable will be executed when [[get()]] is invoked. The signature of the callable
      *   should be `function ($container, $params, $config)`, where `$params` stands for the list of constructor
@@ -263,13 +239,14 @@ class Container
      * - a string: a class name, an interface name or an alias name.
      * @param array $params the list of constructor parameters. The parameters will be passed to the class
      * constructor when [[get()]] is called.
-     * @return static the container itself
+     * @return $this the container itself
      */
-    public function set(string $class, var definition = [], array params = [])
+    public function set(string classs, definition = [], array params = [])
     {
-        let this->_definitions[$class] = this->normalizeDefinition($class, definition);
-        let this->_params[$class] = params;
-        unset this->_singletons[$class];
+        let this->_definitions[classs] =  this->normalizeDefinition(classs, definition);
+        let this->_params[classs] = params;
+        unset this->_singletons[classs];
+
         return this;
     }
 
@@ -283,14 +260,14 @@ class Container
      * @param mixed $definition the definition associated with `$class`. See [[set()]] for more details.
      * @param array $params the list of constructor parameters. The parameters will be passed to the class
      * constructor when [[get()]] is called.
-     * @return static the container itself
+     * @return $this the container itself
      * @see set()
      */
-    public function setSingleton(string $class, var definition = [], array params = [])
+    public function setSingleton(string classs, definition = [], array params = [])
     {
-        let this->_definitions[$class] = this->normalizeDefinition($class, definition);
-        let this->_params[$class] = params;
-        let this->_singletons[$class] = null;
+        let this->_definitions[classs] =  this->normalizeDefinition(classs, definition);
+        let this->_params[classs] = params;
+        let this->_singletons[classs] = null;
         return this;
     }
 
@@ -300,9 +277,9 @@ class Container
      * @return boolean whether the container has the definition of the specified name..
      * @see set()
      */
-    public function has(string $class) -> boolean
+    public function has(string classs) -> boolean
     {
-        return isset this->_definitions[$class];
+        return isset this->_definitions[classs];
     }
 
     /**
@@ -312,19 +289,20 @@ class Container
      * @return boolean whether the given name corresponds to a registered singleton. If `$checkInstance` is true,
      * the method should return a value indicating whether the singleton has been instantiated.
      */
-    public function hasSingleton(string $class, bool checkInstance = false) -> boolean
+    public function hasSingleton(string classs, boolean checkInstance = false) -> boolean
     {
-        return checkInstance ? isset this->_singletons[$class] : array_key_exists($class, this->_singletons);
+        return  checkInstance ? isset this->_singletons[classs]  : array_key_exists(classs, this->_singletons);
     }
 
     /**
      * Removes the definition for the specified name.
      * @param string $class class name, interface name or alias name
      */
-    public function clear(string $class) -> void
+    public function clear(string classs) -> void
     {
-        unset this->_definitions[$class];
-        unset this->_singletons[$class];
+        unset this->_definitions[classs];
+        unset this->_singletons[classs];
+
     }
 
     /**
@@ -334,36 +312,29 @@ class Container
      * @return array the normalized class definition
      * @throws InvalidConfigException if the definition is invalid.
      */
-    protected function normalizeDefinition(string $class, definition)
+    protected function normalizeDefinition(string classs, definition) -> array
     {
-        if empty definition {
-            return ["class" : $class];
-        }
-        else {
-            if typeof definition == "string" {
-                return ["class" : definition];
-            }
-            else {
-                if is_callable(definition, true) || typeof definition == "object" {
-                    return definition;
-                }
-                else {
-                    if typeof definition == "array" {
-                        if !isset definition["class"] {
-                            if strpos($class , "\\") !== false {
-                                let definition["class"] = $class;
-                            } else {
-                                string text = "class";
-                                throw new InvalidConfigException("A class definition requires a \"". text ."\" member.");
-                            }
-                        }
-                        return definition;
-                    } else {
-                        throw new InvalidConfigException("Unsupported definition type for \"" . $class ."\": " . gettype(definition));
-                    }
+        var params;
 
+        if empty(definition) {
+            let params = ["class" : classs];
+            return params;
+        } elseif is_string(definition) {
+            let params = ["class" : definition];
+            return params;
+        } elseif is_callable(definition, true) || is_object(definition) {
+            return definition;
+        } elseif is_array(definition) {
+            if !(isset definition["class"]) {
+                if strpos(classs, "\\") !== false {
+                    let definition["class"] = classs;
+                } else {
+                    throw new InvalidConfigException("A class definition requires a \"class\" member.");
                 }
             }
+            return definition;
+        } else {
+            throw new InvalidConfigException("Unsupported definition type for \"".classs."\": " . gettype(definition));
         }
     }
 
@@ -371,7 +342,7 @@ class Container
      * Returns the list of the object definitions or the loaded shared objects.
      * @return array the list of the object definitions or the loaded shared objects (type or ID => definition or instance).
      */
-    public function getDefinitions()
+    public function getDefinitions() -> array
     {
         return this->_definitions;
     }
@@ -384,39 +355,33 @@ class Container
      * @param array $params constructor parameters
      * @param array $config configurations to be applied to the new instance
      * @return object the newly created instance of the specified class
+     * @throws NotInstantiableException If resolved to an abstract class or an interface (since 2.0.9)
      */
-    protected function build( $class, params, config)
+    protected function build(string classs, array params, array config)
     {
-        /** @var ReflectionClass $reflection */
-        var elements = [], reflection, dependencies;
+        var reflection, dependencies, tmpListReflectionDependencies, index, param, $object, name, value;
 
-        let elements = this->getDependencies($class);
-        let reflection   = elements[0],
-            dependencies = elements[1];
-
-        var index, param;
+        /* @var $reflection ReflectionClass */
+        let tmpListReflectionDependencies = this->getDependencies(classs);
+        let reflection = tmpListReflectionDependencies[0];
+        let dependencies = tmpListReflectionDependencies[1];
         for index, param in params {
             let dependencies[index] = param;
         }
-
-        let dependencies = this->resolveDependencies(dependencies, reflection);
-        if reflection->isInstantiable() {
+        let dependencies =  this->resolveDependencies(dependencies, reflection);
+        if !(reflection->isInstantiable()) {
             throw new NotInstantiableException(reflection->name);
         }
-        if empty config {
+        if empty(config) {
             return reflection->newInstanceArgs(dependencies);
         }
-
-        if !empty dependencies && reflection->implementsInterface("yii\base\Configurable") {
+        if !(empty(dependencies)) && reflection->implementsInterface("yii\\base\\Configurable") {
             // set $config as the last parameter (existing one will be overwritten)
             let dependencies[count(dependencies) - 1] = config;
             return reflection->newInstanceArgs(dependencies);
-
         } else {
-            var $object;
-            let $object = reflection->newInstanceArgs(dependencies);
-            var name, value;
-            for name , value in config {
+            let $object =  reflection->newInstanceArgs(dependencies);
+            for name, value in config {
                 let $object->{name} = value;
             }
             return $object;
@@ -429,17 +394,16 @@ class Container
      * @param array $params the constructor parameters
      * @return array the merged parameters
      */
-    protected function mergeParams(string $class, params)
+    protected function mergeParams(string classs, params)
     {
-        if empty this->_params[$class] {
-            return params;
-        }
+        var ps, index, value;
 
-        if empty params {
-            return this->_params[$class];
+        if empty(this->_params[classs]) {
+            return params;
+        } elseif empty(params) {
+            return this->_params[classs];
         } else {
-            var ps, index, value;
-            let ps = this->_params[$class];
+            let ps = this->_params[classs];
             for index, value in params {
                 let ps[index] = value;
             }
@@ -452,44 +416,30 @@ class Container
      * @param string $class class name, interface name or alias name
      * @return array the dependencies of the specified class.
      */
-    protected function getDependencies(string $class)
+    protected function getDependencies(string classs) -> array
     {
-        var r;
-        if fetch r, this->_reflections[$class] {
-            return [r,  this->_dependencies[$class]];
+        var dependencies, reflection, constructor, param, c;
+
+        if isset this->_reflections[classs] {
+            return [this->_reflections[classs], this->_dependencies[classs]];
         }
-
-        var dependencies = [], reflection, constructor;
-        let reflection = new \ReflectionClass($class);
-
-        let constructor = reflection->getConstructor();
-        if typeof constructor !== "null" {
-            var param;
+        let dependencies =  [];
+        let reflection =  new ReflectionClass(classs);
+        let constructor =  reflection->getConstructor();
+        if constructor !== null {
             for param in constructor->getParameters() {
                 if param->isDefaultValueAvailable() {
-                    let dependencies[] = param->getDefaultValue();
+                    let dependencies[] =  param->getDefaultValue();
+                } elseif param->getName() == "config" {
+                    let dependencies[] =  [];
                 } else {
-                    var c;
-                    let c = param->getClass();
-                    var tmpInstance;
-                    if typeof c == "null" {
-                        let tmpInstance = Instance::of(c);
-                    }
-                    else {
-                        let tmpInstance = Instance::of(c->getName());
-                    }
-                    if !is_a( tmpInstance, "\yii\di\Instance" ) {
-                        let dependencies[] = tmpInstance;
-                    } else {
-                        let dependencies[] = [];
-                    }
+                    let c =  param->getClass();
+                    let dependencies[] = Instance::of( c === null ? null  : c->getName());
                 }
             }
         }
-
-        let this->_reflections[$class] = reflection;
-        let this->_dependencies[$class] = dependencies;
-
+        let this->_reflections[classs] = reflection;
+        let this->_dependencies[classs] = dependencies;
         return [reflection, dependencies];
     }
 
@@ -500,19 +450,18 @@ class Container
      * @return array the resolved dependencies
      * @throws InvalidConfigException if a dependency cannot be resolved or if a dependency cannot be fulfilled.
      */
-    protected function resolveDependencies(dependencies, reflection = null)
+    protected function resolveDependencies(array dependencies, reflection = null) -> array
     {
-        var index, dependency;
+        var index, dependency, name, classs;
+
         for index, dependency in dependencies {
-            if typeof dependency == "object" && (dependency instanceof Instance) {
+            if typeof dependency == "object" && dependency instanceof Instance {
                 if dependency->id !== null {
-                    let dependencies[index] = this->get(dependency->id);
-                }
-                elseif reflection !== null {
-                    var name, $class;
-                    let name = reflection->getConstructor()->getParameters()[index]->getName();
-                    let $class = reflection->getName();
-                    throw new InvalidConfigException("Missing required parameter \"" . name ."\" when instantiating \"". $class ."\".");
+                    let dependencies[index] =  this->get(dependency->id);
+                } elseif reflection !== null {
+                    let name =  reflection->getConstructor()->getParameters()[index]->getName();
+                    let classs =  reflection->getName();
+                    throw new InvalidConfigException("Missing required parameter \"".name."\" when instantiating \"".classs."\".");
                 }
             }
         }
@@ -531,7 +480,7 @@ class Container
      * $formatString = function($string, \yii\i18n\Formatter $formatter) {
      *    // ...
      * }
-     * Yii::$container->invoke($formatString, ['string' => 'Hello World!']);
+     * BaseYii::$container->invoke($formatString, ['string' => 'Hello World!']);
      * ```
      *
      * This will pass the string `'Hello World!'` as the first param, and a formatter instance created
@@ -545,7 +494,7 @@ class Container
      * @throws NotInstantiableException If resolved to an abstract class or an interface (since 2.0.9)
      * @since 2.0.7
      */
-    public function invoke( callback, params = [])
+    public function invoke(callback, array params = [])
     {
         if is_callable(callback) {
             return call_user_func_array(callback, this->resolveCallableDependencies(callback, params));
@@ -553,28 +502,37 @@ class Container
             return call_user_func_array(callback, params);
         }
     }
-    public static function isAssociative($array, boolean allStrings = true)
+
+    /**
+     * Returns a value indicating whether the given array is an associative array.
+     *
+     * An array is associative if all its keys are strings. If `$allStrings` is false,
+     * then an array will be treated as associative if at least one of its keys is a string.
+     *
+     * Note that an empty array will NOT be considered associative.
+     *
+     * @param array $array the array being checked
+     * @param boolean $allStrings whether the array keys must be all strings in order for
+     * the array to be treated as associative.
+     * @return boolean whether the array is associative
+     */
+    public static function isAssociative(array myArray, boolean allStrings = true)
     {
         var key, value;
 
-        if typeof $array != "array" {
+        if !(is_array(myArray)) || empty(myArray) {
             return false;
         }
-
-        if count($array) == 0 {
-            return false;
-        }
-
-        if allStrings == true {
-            for key, value in $array {
-                if typeof key != "string" {
+        if allStrings {
+            for key, value in myArray {
+                if !(is_string(key)) {
                     return false;
                 }
             }
             return true;
         } else {
-            for key, value in $array {
-                if typeof key == "string" {
+            for key, value in myArray {
+                if is_string(key) {
                     return true;
                 }
             }
@@ -595,75 +553,66 @@ class Container
      * @throws NotInstantiableException If resolved to an abstract class or an interface (since 2.0.9)
      * @since 2.0.7
      */
-    public function resolveCallableDependencies( callback, params = [])
+    public function resolveCallableDependencies(callback, array params = []) -> array
     {
-        var app, reflection, args, associative;
-        let app = BaseYii::$app;
-
+        var reflection, args, associative, param, name, classs, className, obj, e, funcName, value;
+        var app = BaseYii::app;
         if is_array(callback) {
-            let reflection = new \ReflectionMethod(callback[0], callback[1]);
+            let reflection =  new \ReflectionMethod(callback[0], callback[1]);
         } else {
-            let reflection = new \ReflectionFunction(callback);
+            let reflection =  new \ReflectionFunction(callback);
         }
-
-        let args = [];
-
-        let associative = $static::isAssociative(params);
-
-        var name, $class, className;
-        var param;
-
+        let args =  [];
+        let associative =  static::isAssociative(params);
         for param in reflection->getParameters() {
-            let $class = null;
-            let className = null;
-            let name = param->getName();
-            var obj;
-            if isset BaseYii::$app && app->has(name) {
-                var obj = app->get(name);
-            }
-
-            let $class = param->getClass();
-            if $class !== null {
-                let className = $class->getName();
-                if associative && typeof params[name] == "object" && params[name] instanceof className {
+            let name =  param->getName();
+            let classs =  param->getClass();
+            if classs !== null {
+                let className =  classs->getName();
+                if associative && isset params[name] && (typeof params[name] == "object") && params[name] instanceof className {
                     let args[] = params[name];
-                    unset(params[name]);
-                } elseif !associative && typeof params[0] == "object" && params[0] instanceof className {
-                    let args[] = array_shift(params);
-                } elseif isset BaseYii::$app && typeof obj == "object" && obj instanceof className {
-                    let args[] = obj;
+                    unset params[name];
+
+                } elseif !(associative) && isset params[0] && (typeof params[0] == "object") && params[0] instanceof className {
+                    let args[] =  array_shift(params);
                 } else {
+                let obj =  app->get(name);
+                if app->has(name) && (typeof obj == "object") && obj instanceof className {
+                    let args[] = obj;
+                }
+                 else {
                     // If the argument is optional we catch not instantiable exceptions
                     try {
-                        let args[] = this->get(className);
-                    } catch NotInstantiableException {
+                        let args[] =  this->get(className);
+                    } catch NotInstantiableException, e {
                         if param->isDefaultValueAvailable() {
-                            let args[] = param->getDefaultValue();
+                            let args[] =  param->getDefaultValue();
+                        } elseif param->getName() == "config" {
+                            let args[] =  [];
                         } else {
-                            throw new NotInstantiableException( "" );
-                            //throw e;
+                            throw e;
                         }
                     }
-                }
+                }}
             } elseif associative && isset params[name] {
                 let args[] = params[name];
-                unset(params[name]);
-            } elseif !associative && count(params) {
-                let args[] = array_shift(params);
+                unset params[name];
+
+            } elseif !(associative) && count(params) {
+                let args[] =  array_shift(params);
             } elseif param->isDefaultValueAvailable() {
-                let args[] = param->getDefaultValue();
-            } elseif !param->isOptional() {
-                var funcName;
-                let funcName = reflection->getName();
+                let args[] =  param->getDefaultValue();
+            } elseif name == "config" {
+                let args[] =  [];
+            } elseif !(param->isOptional()) {
+                let funcName =  reflection->getName();
                 throw new InvalidConfigException("Missing required parameter \"".name."\" when calling \"".funcName."\".");
             }
         }
-
-        var value;
         for value in params {
             let args[] = value;
         }
         return args;
-
     }
+
 }
