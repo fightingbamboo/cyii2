@@ -96,7 +96,7 @@ class $Object implements Configurable
      *
      * @param array $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct(array config = [])
+    public function __construct(array! config = [])
     {
         if !(empty(config)) {
             BaseYii::configure(this, config);
@@ -220,7 +220,7 @@ class $Object implements Configurable
      * @throws UnknownMethodException when calling unknown method
      * @return mixed the method return value
      */
-    public function __call( name, params)
+    public function __call(string name, params)
     {
         throw new UnknownMethodException("Calling unknown method: " . get_class(this) . "::".name."()");
     }

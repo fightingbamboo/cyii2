@@ -19,6 +19,8 @@
     "php5": "prototypes",
     "php7": "prototypes"
   },
+  "extra-sources": [
+  ],
   "warnings": {
     "unused-variable": false,
     "unused-variable-external": false,
