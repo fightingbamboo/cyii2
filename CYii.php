@@ -43,7 +43,7 @@ defined('YII_ENABLE_ERROR_HANDLER') or define('YII_ENABLE_ERROR_HANDLER', true);
 
 
 
-class Yii extends \yii\BaseYii
+class Yii extends yii\BaseYii
 {
 }
 Yii::$aliases = ['@yii' => YII2_PATH ];
