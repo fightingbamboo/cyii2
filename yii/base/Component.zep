@@ -101,7 +101,7 @@ class Component extends \yii\base\Object
     /**
      * @var Behavior[]|null the attached behaviors (behavior name => behavior). This is `null` when not initialized.
      */
-    private _behaviors;
+    protected _behaviors;
 
     /**
      * Returns the value of a component property.
