@@ -61,11 +61,11 @@ class Controller extends Component implements ViewContextInterface
     /**
      * @var View the view object that can be used to render views or view files.
      */
-    protected _view;
+    private _view;
     /**
      * @var string the root directory that contains view files for this controller.
      */
-    protected _viewPath;
+    private _viewPath;
     /**
      * @param string $id the ID of this controller.
      * @param Module $module the module that this controller belongs to.

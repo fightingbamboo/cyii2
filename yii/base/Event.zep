@@ -48,7 +48,7 @@ class Event extends \yii\base\Object
     /**
      * @var array contains all globally registered event handlers.
      */
-    protected static _events = [];
+    private static _events = [];
     /**
      * Attaches an event handler to a class-level event.
      *

@@ -1,0 +1,33 @@
+diff --git a/framework/di/Container.php b/framework/di/Container.php
+index 62b5180..08e37e2 100644
+--- a/framework/di/Container.php
++++ b/framework/di/Container.php
+@@ -426,7 +426,9 @@ class Container extends Component
+             foreach ($constructor->getParameters() as $param) {
+                 if ($param->isDefaultValueAvailable()) {
+                     $dependencies[] = $param->getDefaultValue();
+-                } else {
++                } elseif ($param->getName() == "config") {
++                    $dependencies[] = [];
++                }  else {
+                     $c = $param->getClass();
+                     $dependencies[] = $c === null ? [] : Instance::of( $c->getName());
+                 }
+@@ -540,6 +542,8 @@ class Container extends Component
+                     } catch (NotInstantiableException $e) {
+                         if ($param->isDefaultValueAvailable()) {
+                             $args[] = $param->getDefaultValue();
++                        } elseif ($param->getName() == "config") {
++                            $dependencies[] = [];
+                         } else {
+                             throw $e;
+                         }
+@@ -553,6 +557,8 @@ class Container extends Component
+                 $args[] = array_shift($params);
+             } elseif ($param->isDefaultValueAvailable()) {
+                 $args[] = $param->getDefaultValue();
++            } elseif ($name == "config") {
++                $args[] = [];
+             } elseif (!$param->isOptional()) {
+                 $funcName = $reflection->getName();
+                 throw new InvalidConfigException("Missing required parameter \"$name\" when calling \"$funcName\".");

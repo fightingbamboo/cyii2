@@ -49,7 +49,7 @@ class BaseYii
      */
     public static container;
 
-    protected static _logger;
+    private static _logger;
 
     /**
      * Returns a string representing the current version of the Yii framework.
