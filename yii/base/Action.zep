@@ -76,7 +76,7 @@ class Action extends Component
      * @return mixed the result of the action
      * @throws InvalidConfigException if the action class does not have a run() method
      */
-    public function runWithParams(params)
+    public function runWithParams(array! params)
     {
         var args, requestedParams;
         if !method_exists(this, "run") {

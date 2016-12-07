@@ -98,7 +98,7 @@ class $Object implements Configurable
      */
     public function __construct(array! config = [])
     {
-        if !(empty(config)) {
+        if (!empty config ) {
             BaseYii::configure(this, config);
         }
         this->init();

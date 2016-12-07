@@ -62,7 +62,7 @@ class Behavior extends \yii\base\Object
      * Make sure you call the parent implementation if you override this method.
      * @param Component $owner the component that this behavior is to be attached to.
      */
-    public function attach( owner )
+    public function attach( <Component> owner )
     {
         var event, handler, onHandler;
 

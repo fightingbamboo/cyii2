@@ -39,7 +39,7 @@ class ActionFilter extends Behavior
     /**
      * @inheritdoc
      */
-    public function attach(owner)
+    public function attach(<Component> owner)
     {
         let this->owner = owner;
         owner->on(Controller::EVENT_BEFORE_ACTION, [this, "beforeFilter"]);
@@ -60,7 +60,7 @@ class ActionFilter extends Behavior
     /**
      * @param ActionEvent $event
      */
-    public function beforeFilter( event)
+    public function beforeFilter( <ActionEvent> event)
     {
         if !(this->isActive(event->action)) {
             return;
@@ -78,7 +78,7 @@ class ActionFilter extends Behavior
     /**
      * @param ActionEvent $event
      */
-    public function afterFilter( event)
+    public function afterFilter( <ActionEvent> event)
     {
         let event->result =  this->afterAction(event->action, event->result);
 
@@ -91,7 +91,7 @@ class ActionFilter extends Behavior
      * @param Action $action the action to be executed.
      * @return boolean whether the action should continue to be executed.
      */
-    public function beforeAction(action)
+    public function beforeAction(<Action> action)
     {
         return true;
     }
@@ -136,7 +136,7 @@ class ActionFilter extends Behavior
      * @param Action $action the action being filtered
      * @return boolean whether the filter is active for the given action.
      */
-    protected function isActive( action)
+    protected function isActive(<Action> action)
     {
         var id, onlyMatch, pattern, exceptMatch;
     

@@ -78,16 +78,13 @@ class Event extends \yii\base\Object
      * handler list.
      * @see off()
      */
-    public static function on(string classs, string name, handler, data = null, boolean append = true) -> void
+    public static function on(string $class, string name, handler, data = null, boolean append = true) -> void
     {
-        var tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125;
-    
-        let classs =  ltrim(classs, "\\");
-        if append || ( !isset self::_events[name] || !isset self::_events[name][classs] || empty(self::_events[name][classs])) {
-            let self::_events[name][classs][] =  [handler, data];
+        let $class =  ltrim($class, "\\");
+        if append || ( !isset self::_events[name] || !isset self::_events[name][$class] || empty(self::_events[name][$class])) {
+            let self::_events[name][$class][] =  [handler, data];
         } else {
-            let tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125 = [handler, data];
-            array_unshift(self::_events[name][classs], tmpArray3b96bb5d49aa4e738ab1b36c1e0a9125);
+            array_unshift(self::_events[name][$class], [handler, data]);
         }
     }
     
@@ -103,29 +100,29 @@ class Event extends \yii\base\Object
      * @return boolean whether a handler is found and detached.
      * @see on()
      */
-    public static function off(string classs, string name, handler = null)
+    public static function off(string $class, string name, handler = null)
     {
         var removed, i, event;
     
-        let classs =  ltrim(classs, "\\");
-        if !isset self::_events[name] || !isset self::_events[name][classs] || empty(self::_events[name][classs]) {
+        let $class =  ltrim($class, "\\");
+        if !isset self::_events[name] || !isset self::_events[name][$class] || empty(self::_events[name][$class]) {
             return false;
         }
         if handler === null {
-            unset self::_events[name][classs];
+            unset self::_events[name][$class];
             
             return true;
         } else {
             let removed =  false;
-            for i, event in self::_events[name][classs] {
+            for i, event in self::_events[name][$class] {
                 if event[0] === handler {
-                    unset self::_events[name][classs][i];
+                    unset self::_events[name][$class][i];
                     
                     let removed =  true;
                 }
             }
             if removed {
-                let self::_events[name][classs] =  array_values(self::_events[name][classs]);
+                let self::_events[name][$class] =  array_values(self::_events[name][$class]);
             }
             return removed;
         }
@@ -150,22 +147,22 @@ class Event extends \yii\base\Object
      * @param string $name the event name.
      * @return boolean whether there is any handler attached to the event.
      */
-    public static function hasHandlers(classs, string name) -> boolean
+    public static function hasHandlers($class, string name) -> boolean
     {
-        var classes, tmpArray9613f42f8264d80e17bfc80cc7a471fb;
+        var classes;
     
         if !isset self::_events[name] || empty(self::_events[name]) {
             return false;
         }
-        if is_object(classs) {
-            let classs =  get_class(classs);
+        if is_object($class) {
+            let $class =  get_class($class);
         } else {
-            let classs =  ltrim(classs, "\\");
+            let $class =  ltrim($class, "\\");
         }
-        let tmpArray9613f42f8264d80e17bfc80cc7a471fb = [classs];
-        let classes =  array_merge(tmpArray9613f42f8264d80e17bfc80cc7a471fb, class_parents(classs, true), class_implements(classs, true));
-        for classs in classes {
-            if  isset self::_events[name][classs] && !empty(self::_events[name][classs]) {
+
+        let classes =  array_merge([$class], class_parents($class, true), class_implements($class, true));
+        for $class in classes {
+            if  isset self::_events[name][$class] && !empty(self::_events[name][$class]) {
                 return true;
             }
         }
@@ -180,9 +177,9 @@ class Event extends \yii\base\Object
      * @param string $name the event name.
      * @param Event $event the event parameter. If not set, a default [[Event]] object will be created.
      */
-    public static function trigger(classs, string name, <Event> event = null)
+    public static function trigger($class, string name, <Event> event = null)
     {
-        var classes, tmpArray94fd3581f8118e54e2778c97fdb99a2e, handler;
+        var classes, handler;
     
         if !isset self::_events[name] || empty(self::_events[name]) {
             return;
@@ -192,19 +189,19 @@ class Event extends \yii\base\Object
         }
         let event->handled =  false;
         let event->name = name;
-        if is_object(classs) {
+        if is_object($class) {
             if event->sender === null {
-                let event->sender = classs;
+                let event->sender = $class;
             }
-            let classs =  get_class(classs);
+            let $class =  get_class($class);
         } else {
-            let classs =  ltrim(classs, "\\");
+            let $class =  ltrim($class, "\\");
         }
-        let tmpArray94fd3581f8118e54e2778c97fdb99a2e = [classs];
-        let classes =  array_merge(tmpArray94fd3581f8118e54e2778c97fdb99a2e, class_parents(classs, true), class_implements(classs, true));
-        for classs in classes {
-            if  isset self::_events[name][classs] && !empty(self::_events[name][classs]) {
-                for handler in self::_events[name][classs] {
+
+        let classes =  array_merge([$class], class_parents($class, true), class_implements($class, true));
+        for $class in classes {
+            if  isset self::_events[name][$class] && !empty(self::_events[name][$class]) {
+                for handler in self::_events[name][$class] {
                     let event->data = handler[1];
                     call_user_func(handler[0], event);
                     if event->handled {
