@@ -91,7 +91,7 @@ class ActionFilter extends Behavior
      * @param Action $action the action to be executed.
      * @return boolean whether the action should continue to be executed.
      */
-    public function beforeAction(<Action> action)
+    public function beforeAction( action)
     {
         return true;
     }

@@ -1,5 +1,5 @@
 {
-    "name": "cyii 2",
+    "name": "cyii2",
     "description": "extension of yii 2, speed up for it",
     "keywords": [
         "extension",
@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": ">=5.5",
-        "phalcon/zephir": "^0.9.4"
+        "phalcon/zephir": "^0.9.5"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.4"

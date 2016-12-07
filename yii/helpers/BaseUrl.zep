@@ -226,6 +226,40 @@ class BaseUrl
         }
         return url;
     }
+
+    /**
+     * Normalize URL by ensuring that it use specified scheme.
+     *
+     * If URL is relative or scheme is not string, normalization is skipped.
+     *
+     * @param string $url the URL to process
+     * @param string $scheme the URI scheme used in URL (e.g. `http` or `https`). Use empty string to
+     * create protocol-relative URL (e.g. `//example.com/path`)
+     * @return string the processed URL
+     * @since 2.0.11
+     */
+    public static function ensureScheme(url, scheme)
+    {
+        var pos;
+        if ($static::isRelative(url) || !is_string(scheme)) {
+            return url;
+        }
+
+        if (substr(url, 0, 2) === "//") {
+            // e.g. //example.com/path/to/resource
+            return scheme === "" ? url : $scheme.":".$url;
+        }
+        let pos = strpos(url, "://");
+        if ( pos !== false) {
+            if (scheme === "") {
+               let url = substr(url, pos + 1);
+            } else {
+               let url = scheme . substr(url, pos);
+            }
+        }
+
+        return $url;
+    }
     
     /**
      * Returns the base URL of the current request.

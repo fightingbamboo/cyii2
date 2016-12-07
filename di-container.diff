@@ -1,19 +1,17 @@
 diff --git a/framework/di/Container.php b/framework/di/Container.php
-index 62b5180..08e37e2 100644
+index 5446126..4033f33 100644
 --- a/framework/di/Container.php
 +++ b/framework/di/Container.php
-@@ -426,7 +426,9 @@ class Container extends Component
+@@ -428,6 +428,8 @@ class Container extends Component
              foreach ($constructor->getParameters() as $param) {
                  if ($param->isDefaultValueAvailable()) {
                      $dependencies[] = $param->getDefaultValue();
--                } else {
 +                } elseif ($param->getName() == "config") {
 +                    $dependencies[] = [];
-+                }  else {
+                 } else {
                      $c = $param->getClass();
-                     $dependencies[] = $c === null ? [] : Instance::of( $c->getName());
-                 }
-@@ -540,6 +542,8 @@ class Container extends Component
+                     $dependencies[] = Instance::of($c === null ? null : $c->getName());
+@@ -542,6 +544,8 @@ class Container extends Component
                      } catch (NotInstantiableException $e) {
                          if ($param->isDefaultValueAvailable()) {
                              $args[] = $param->getDefaultValue();
@@ -22,7 +20,7 @@ index 62b5180..08e37e2 100644
                          } else {
                              throw $e;
                          }
-@@ -553,6 +557,8 @@ class Container extends Component
+@@ -555,6 +559,8 @@ class Container extends Component
                  $args[] = array_shift($params);
              } elseif ($param->isDefaultValueAvailable()) {
                  $args[] = $param->getDefaultValue();
