@@ -58,10 +58,11 @@
                      break;
 ```
 ###性能
-* 硬件 mac book air 2013
+* 硬件 mac book pro 2016
 * 测试代码 https://github.com/yiisoft/yii2-app-benchmark
-* 命令 ab -n 5000 http://127.0.0.1:88/yii-benchmark/
-* cyii2 Requests per second:    171.55 [#/sec] (mean) 
-* yii2 Requests per second:     111.20 [#/sec] (mean) 
+* 命令 ab -c 4 -n 5000 http://127.0.0.1:88/yii-benchmark/
+* 运行5次取最高值
+* cyii2 Requests per second:    478.08 [#/sec] (mean) 
+* yii2 Requests per second:     408.08 [#/sec] (mean) 
 
 ###已存在的问题
